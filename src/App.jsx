@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import MoonParticles from "./components/MoonParticles/MoonParticles";
 import Navbar from "./components/Navbar/Navbar";
 import AboutMe from "./pages/About/AboutMe"; // Import About Section
+import Projects from "./pages/Projects"; // Import Projects Section
 
 export default function App() {
   return (
@@ -28,6 +29,11 @@ export default function App() {
       {/* About Section (Scrollable) */}
       <section className="min-h-screen flex items-center justify-center bg-black">
         <AboutMe />
+      </section>
+
+      {/* Projects Section (Scrollable) */}
+      <section className="min-h-screen flex items-center justify-center bg-black">
+        <Projects />
       </section>
     </div>
   );
