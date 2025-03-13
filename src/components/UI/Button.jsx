@@ -9,7 +9,7 @@ const Button = ({
   onClick,
   ...props 
 }) => {
-  const baseStyles = "rounded-full font-medium transition-all duration-300 tracking-wide";
+  const baseStyles = "rounded-full font-[JazzFont] font-medium transition-all duration-300 tracking-wide";
   
   const variants = {
     primary: "bg-gradient-to-r from-gray-400 to-gray-300 hover:from-purple-500 hover:to-indigo-500 text-black hover:text-white hover:shadow-glow",
