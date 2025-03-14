@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import Button from "./Button"; // Import your custom Button
 
 const mediaItems = [
   { src: "/Gallery/first.jpg", size: "col-span-1 row-span-1" },
@@ -21,15 +22,34 @@ const mediaItems = [
 const Gallery = () => {
   return (
     <div className="bg-black min-h-screen flex flex-col items-center py-10">
-      {/* Title with Animation */}
-      <motion.h2
-        className="text-gray-500 font-[JazzFont] text-xl md:text-xl font-semibold mb-6 text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-      >
-        Not a photographer, just the world from my eyes 🤍📸
-      </motion.h2>
+      {/* Back Button and Title Row */}
+      <div className="flex items-center justify-center w-full max-w-5xl px-4">
+        {/* Back Button using Custom Button Component */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <Button
+            variant="secondary"
+            size="medium"
+            className="mr-4"
+            onClick={() => window.history.back()}
+          >
+            ← Back
+          </Button>
+        </motion.div>
+
+        {/* Title with Animation */}
+        <motion.h2
+          className="text-gray-500 font-[JazzFont] text-xl md:text-xl font-semibold text-center flex-grow"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+        >
+          Not a photographer, just the world from my eyes 🤍📸
+        </motion.h2>
+      </div>
 
       {/* Gallery Grid */}
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 p-4 max-w-5xl">
