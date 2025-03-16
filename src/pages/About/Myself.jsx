@@ -3,7 +3,7 @@ import React from "react";
 const Myself = () => {
   return (
     <div className="w-full max-w-md p-6">
-      <h2 className="text-4xl font-bold tracking-wider font-[JazzFont]">ASH</h2>
+      <h2 className="text-4xl font-bold tracking-wider font-[JazzFont]">A S H</h2>
 
       <p className="mt-6 text-lg text-gray-300 leading-relaxed font-[JazzFont]">
         Hiee! I am <span className="text-white font-bold">Ayesha</span>, but you can call me <span className="text-purple-400 font-semibold">Ash</span>.  

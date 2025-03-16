@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "../UI/Button";
 import { scroller } from "react-scroll";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [hideNavbar, setHideNavbar] = useState(false);
+  const [prevScrollY, setPrevScrollY] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+      const currentScrollY = window.scrollY;
 
-      // Update active section based on scroll position
+      // Hide navbar when scrolling down, show when scrolling up
+      if (currentScrollY > prevScrollY && currentScrollY > 50) {
+        setHideNavbar(true);
+      } else {
+        setHideNavbar(false);
+      }
+
+      setPrevScrollY(currentScrollY);
+
+      setScrolled(currentScrollY > 10);
       const sections = ["home", "projects", "about"];
       sections.forEach((id) => {
         const section = document.getElementById(id);
@@ -28,7 +38,7 @@ const Navbar = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [prevScrollY]);
 
   const scrollToSection = (id) => {
     setMobileMenuOpen(false);
@@ -46,22 +56,23 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-black bg-opacity-80 backdrop-blur-md" : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent ${
+        hideNavbar ? "-translate-y-full" : "translate-y-0"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link to="/" className="font-[JazzFont] tracking-widest text-white text-2xl animate-float">
+          {/* Logo and Name */}
+          <div className="flex items-center space-x-3">
+            <img src="./Gallery/myself.jpg" alt="Logo" className="h-12 w-12 mt-0.5 rounded-full" />
+            <Link to="/" className="font-[JazzFont] tracking-widest text-white text-3xl animate-float">
               AYESHA
             </Link>
           </div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-8">
+          <div className="hidden md:flex ml-auto">
+            <div className="flex items-center space-x-8">
               {[{ name: "Home", id: "home" }, { name: "Projects", id: "projects" }, { name: "About", id: "about" }].map(
                 (item, index) => (
                   <button
@@ -77,7 +88,6 @@ const Navbar = () => {
                   </button>
                 )
               )}
-              {/* Gallery should navigate instead of scroll */}
               <button
                 onClick={goToGallery}
                 className="text-sm font-[JazzFont] tracking-wider text-gray-300 hover:text-white transition-colors duration-300"
@@ -85,13 +95,6 @@ const Navbar = () => {
                 GALLERY
               </button>
             </div>
-          </div>
-
-          {/* Action Button */}
-          <div className="hidden md:block">
-            <Button variant="primary" size="medium">
-              EXPLORE
-            </Button>
           </div>
 
           {/* Mobile menu button */}

@@ -56,7 +56,7 @@ const About = () => {
         ))}
       </div>
 
-      <p className="mt-4 text-gray-400 text-sm font-[JazzFont]">
+      <p className="mt-4 mb-8 text-gray-400 text-sm font-[JazzFont]">
         (Click on elements below to discover)
       </p>
 
