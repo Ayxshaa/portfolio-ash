@@ -1,10 +1,11 @@
 import { useRef } from 'react';
 import * as THREE from 'three';
+import { Html } from '@react-three/drei'; // Import Html for non-Three.js elements
 import MoonParticlesCore from './MoonParticlesCore';
 import MoonParticlesAnimation from './MoonParticlesAnimation';
+import  Title  from '../UI/Title'; // Import Title component
 
 export default function MoonParticles() {
-    // Create all the refs needed for both components
     const moonRef = useRef();
     const particlesRef = useRef();
     const mouseRef = useRef(new THREE.Vector2(0, 0));
@@ -12,7 +13,6 @@ export default function MoonParticles() {
     const mouseVelocityRef = useRef(new THREE.Vector2(0, 0));
     const targetRotationRef = useRef(new THREE.Vector2(0, 0));
     
-    // Add raycaster for detecting when mouse is over the moon
     const raycasterRef = useRef(new THREE.Raycaster());
     const screenMouseRef = useRef(new THREE.Vector2(0, 0));
     
@@ -21,11 +21,9 @@ export default function MoonParticles() {
         isMouseNearMoon: false,
         lastInteractionTime: 0,
         returnToRestTimeout: null,
-        // Add moon proximity settings
-        moonProximityThreshold: 2.5, // Adjust this value to control how close the cursor needs to be to the moon
+        moonProximityThreshold: 2.5,
     });
 
-    // Helpers to set refs from the child component
     const setMoonRef = (mesh) => {
         moonRef.current = mesh;
     };
@@ -36,14 +34,12 @@ export default function MoonParticles() {
 
     return (
         <>
-            {/* Component responsible for loading models and creating particles */}
             <MoonParticlesCore 
                 setMoonRef={setMoonRef}
                 setParticlesRef={setParticlesRef}
                 particleSystemStateRef={particleSystemStateRef}
             />
             
-            {/* Component responsible for animations and interactions */}
             <MoonParticlesAnimation 
                 moonRef={moonRef}
                 particlesRef={particlesRef}
@@ -55,6 +51,13 @@ export default function MoonParticles() {
                 raycasterRef={raycasterRef}
                 screenMouseRef={screenMouseRef}
             />
+
+            {/* Wrap Title in <Html> so it renders properly inside Three.js */}
+            <Html position={[0, -2, 0]} center>
+                <div className='w-screen flex justify-center mt-4'>
+                <Title />
+                </div>
+            </Html>
         </>
     );
 }
