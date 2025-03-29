@@ -1,88 +1,156 @@
-import React, { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useAnimation } from "framer-motion";
 
 const Projects = () => {
-  const containerRef = useRef(null);
-
   const projects = [
     {
       id: 1,
-      title: "CHAT APPLICATION",
-      description: "01",
-      image: "https://media.istockphoto.com/id/1834968051/photo/chatbot-engaging-in-online-conversations.webp?s=1024x1024&w=is&k=20&c=WciIMg--LWPaKJRMFlOeH4cpN3AWLRWpPLXao2AEfAQ="
+      title: "Portfolio Website",
+      description: "A responsive portfolio website built with React and Tailwind CSS.",
+      image: "./Gallery/project1.jpg",
+      technologies: ["React", "Tailwind CSS", "JavaScript"],
+      link: "https://example.com/project1",
     },
     {
       id: 2,
-      title: "EVENT MANAGEMENT",
-      description: "02",
-      image: "https://images.unsplash.com/photo-1597879995289-a5ef25133718?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      title: "E-commerce Platform",
+      description: "A full-featured online store with user authentication and payment processing.",
+      image: "./Gallery/project2.jpg",
+      technologies: ["React", "Node.js", "MongoDB", "Stripe"],
+      link: "https://example.com/project2",
     },
     {
       id: 3,
-      title: "EMPLOYEE MANAGEMENT",
-      description: "03",
-      image: "https://plus.unsplash.com/premium_photo-1676320103037-fae0b1d3668d?q=80&w=3104&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      title: "Social Media Dashboard",
+      description: "Analytics dashboard for monitoring social media performance across platforms.",
+      image: "./Gallery/project3.jpg",
+      technologies: ["React", "Chart.js", "Firebase", "API Integration"],
+      link: "https://example.com/project3",
+    },
+    {
+      id: 4,
+      title: "Mobile App",
+      description: "Cross-platform mobile application for event management and ticketing.",
+      image: "./Gallery/project4.jpg",
+      technologies: ["React Native", "Redux", "Firebase", "Expo"],
+      link: "https://example.com/project4",
     },
   ];
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
   return (
-    <section className="relative min-h-screen bg-black bg-opacity-90 backdrop-blur-md" id="projects">
-      <div ref={containerRef} className="h-[500vh] relative">
-        <div className="sticky top-0 h-screen flex items-center justify-center">
-          {projects.map((project, index) => {
-            const start = index === 0 ? 0 : index * 0.4;
-            const end = (index + 1) * 0.45;
+    <section id="projects" className="relative w-full min-h-screen bg-black">
+      <div className="text-center py-16">
+        <h2 className="text-4xl font-[JazzFont] tracking-widest text-white">
+          PROJECTS
+        </h2>
+        <div className="w-24 h-1 bg-purple-500 mx-auto mt-4"></div>
+      </div>
 
-            const opacity = useTransform(
-              scrollYProgress,
-              [start - 0.05, start, end - 0.15, end],
-              [0, 1, 1, 0]
-            );
-
-            const scale = useTransform(scrollYProgress, [start, end], [1.1, 1]);
-
-            return (
-              <motion.div
-                key={project.id}
-                className="absolute w-[60vw] h-[60vh] text-white font-[JazzFont]"
-                style={{
-                  opacity,
-                  scale,
-                  zIndex: projects.length - index,
-                }}
-              >
-                <div className="relative h-full w-full overflow-hidden rounded-lg border border-purple-500 shadow-lg">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/50" />
-                  <motion.div
-                    className="absolute bottom-12 left-12 text-white text-left"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <p className="mb-3 text-7xl tracking-wide bg-black/50 px-4 py-2 rounded-md border border-white">
-                      {project.description}
-                    </p>
-                    <h3 className="text-3xl tracking-wide bg-black/50 px-4 py-2 rounded-md border border-white">
-                      {project.title}
-                    </h3>
-                  </motion.div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+      {/* Projects List */}
+      <div className="relative w-full flex flex-col items-center">
+        {projects.map((project, index) => (
+          <ProjectCard key={project.id} project={project} index={index} />
+        ))}
       </div>
     </section>
+  );
+};
+
+const ProjectCard = ({ project, index }) => {
+  const controls = useAnimation();
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          controls.start({ opacity: 1, y: 0, scale: 1, rotateX: 0 });
+        }
+      },
+      { threshold: 0.4 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [controls]);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="w-full max-w-4xl px-4 sm:px-6 mb-20"
+      initial={{ opacity: 0, y: 80, scale: 0.8, rotateX: -10 }}
+      animate={controls}
+      transition={{
+        duration: 0.6,
+        ease: "easeOut",
+        delay: index * 0.2, // Delays each card slightly for a stagger effect
+      }}
+    >
+      <motion.div
+        whileHover={{
+          scale: 1.05,
+          rotateX: 5,
+          boxShadow: "0px 10px 30px rgba(128,0,128,0.6)",
+        }}
+        className="bg-gray-900 bg-opacity-70 backdrop-blur-lg rounded-xl overflow-hidden shadow-2xl transition-transform"
+      >
+        <div className="md:flex">
+          <motion.div
+            className="md:w-1/2"
+            whileHover={{ scale: 1.08, rotateZ: 3 }}
+          >
+            <img
+              src={project.image}
+              alt={project.title}
+              className="w-full h-full object-cover transform transition-transform duration-500"
+              onError={(e) => {
+                e.target.src =
+                  "https://via.placeholder.com/600x400?text=Project+Image";
+              }}
+            />
+          </motion.div>
+          <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
+            <motion.h3
+              className="text-2xl md:text-3xl font-[JazzFont] tracking-wider text-purple-400 mb-4"
+              whileHover={{ scale: 1.1, color: "#fff" }}
+            >
+              {project.title}
+            </motion.h3>
+            <p className="text-gray-300 mb-6">{project.description}</p>
+            <motion.div className="mb-6">
+              <h4 className="text-sm font-bold text-gray-400 mb-2">
+                TECHNOLOGIES:
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {project.technologies.map((tech, i) => (
+                  <motion.span
+                    key={i}
+                    className="px-3 py-1 bg-purple-900 bg-opacity-60 rounded-full text-xs text-white"
+                    whileHover={{
+                      scale: 1.2,
+                      backgroundColor: "#fff",
+                      color: "#6B46C1",
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {tech}
+                  </motion.span>
+                ))}
+              </div>
+            </motion.div>
+            <motion.a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-6 py-2 border border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white transition-colors duration-300 rounded-md font-[JazzFont] tracking-wider"
+              whileHover={{ scale: 1.1 }}
+            >
+              VIEW PROJECT
+            </motion.a>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
