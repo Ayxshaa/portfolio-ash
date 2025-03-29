@@ -7,6 +7,7 @@ import MoonParticles from "./components/MoonParticles/MoonParticles";
 import Navbar from "./components/Navbar/Navbar";
 import AboutMe from "./pages/About/AboutMe";
 import Projects from "./pages/Projects";
+import Contact from "./pages/Contact"; // Import the Contact component
 
 export default function MainContent() {
   const location = useLocation();
@@ -37,6 +38,11 @@ export default function MainContent() {
 
           <Element name="projects" className="min-h-screen flex items-center justify-center bg-gray-800">
             <Projects />
+          </Element>
+
+          {/* Added Contact section */}
+          <Element name="contact" className="min-h-screen flex items-center justify-center bg-black">
+            <Contact />
           </Element>
         </>
       )}
