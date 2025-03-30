@@ -47,6 +47,7 @@
   animation: slide-up 1s ease forwards;
 }
 
-.animate-float {
+/* Animation for only 'SAY HELLO' inside Contact */
+#contact .animate-float {
   animation: float 4s ease-in-out infinite;
 }
