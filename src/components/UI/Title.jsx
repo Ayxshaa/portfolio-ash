@@ -1,41 +1,26 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 
 const Title = () => {
   const titleText = "Jazz on the Moon";
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   return (
-    <div className="flex items-center justify-center h-screen bg-transparent">
-      <motion.h1
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="text-white text-8xl font-[Berdiolla] tracking-widest flex"
-      >
+    <div className="flex items-center justify-center font-[Berdiolla] h-screen bg-transparent">
+      <h1 className="text-white text-4xl md:text-6xl lg:text-8xl font-bold tracking-widest text-center">
         {titleText.split(" ").map((word, wordIndex) => (
           <span
             key={wordIndex}
-            className={word.toLowerCase() === "moon" ? "text-gold" : ""}
+            className={`${word.toLowerCase() === "moon" ? "text-purple-500" : ""} inline-block mx-1 md:mx-2`}
           >
-            {word.split("").map((letter, index) => (
-              <motion.span
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: (wordIndex * 5 + index) * 0.1, // Adjust timing per word and letter
-                  duration: 0.5,
-                  ease: "easeOut",
-                }}
-                className="inline-block"
-              >
-                {letter}
-              </motion.span>
-            ))}
-            &nbsp; {/* Space between words */}
+            {word}
+            {wordIndex < titleText.split(" ").length - 1 ? " " : ""}
           </span>
         ))}
-      </motion.h1>
+      </h1>
     </div>
   );
 };
