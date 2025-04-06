@@ -1,3 +1,4 @@
+import React, { lazy } from "react";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Suspense } from "react";
@@ -6,8 +7,11 @@ import { useLocation } from "react-router-dom";
 import MoonParticles from "./components/MoonParticles/MoonParticles";
 import Navbar from "./components/Navbar/Navbar";
 import AboutMe from "./pages/About/AboutMe";
-import Projects from "./pages/Projects";
+//import Projects from "./pages/Projects";
 import Contact from "./pages/Contact"; // Import the Contact component
+
+const Projects = lazy(() => import("./pages/Projects"))
+
 
 export default function MainContent() {
   const location = useLocation();
