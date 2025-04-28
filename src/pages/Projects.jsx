@@ -13,27 +13,19 @@ const Projects = () => {
     },
     {
       id: 2,
-      title: "E-commerce Platform",
-      description: "A full-featured online store with user authentication and payment processing.",
-      image: "./Gallery/Project2.png",
+      title: "Chat-Application:A4 Zone",
+      description: "Real-time chat application with user authentication and payment integration.",
+      image: "./Gallery/ChatApplication.png",
       technologies: ["React", "Node.js", "MongoDB", "Stripe"],
       link: "https://example.com/project2",
     },
     {
       id: 3,
-      title: "Social Media Dashboard",
-      description: "Analytics dashboard for monitoring social media performance across platforms.",
-      image: "./Gallery/Project3.png",
+      title: "Event Management ",
+      description: "A web application for managing events, including ticket booking and user registration.",
+      image: "./Gallery/EventManagement.png",
       technologies: ["React", "Chart.js", "Firebase", "API Integration"],
       link: "https://example.com/project3",
-    },
-    {
-      id: 4,
-      title: "Mobile App",
-      description: "Cross-platform mobile application for event management and ticketing.",
-      image: "./Gallery/Project4.jpg",
-      technologies: ["React Native", "Redux", "Firebase", "Expo"],
-      link: "https://example.com/project4",
     },
   ];
 
