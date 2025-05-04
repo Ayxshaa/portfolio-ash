@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+
 import * as THREE from 'three';
+import { useFrame, useThree } from '@react-three/fiber';
 
 // This component handles the animation and interaction for the moon and its particles
 export default function MoonParticlesAnimation({ 

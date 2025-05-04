@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
+import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import * as THREE from 'three';
+
 import gsap from 'gsap';
 import generateParticlesFromMesh from './UseGenerateParticles';
 

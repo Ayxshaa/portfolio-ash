@@ -1,6 +1,13 @@
+// Fixed version of generateParticlesFromMesh.js
 import * as THREE from 'three';
 
 export default function generateParticlesFromMesh(mesh, density = 15) {
+    // First ensure THREE.js is fully loaded and initialized
+    if (!THREE || !THREE.BufferGeometry) {
+        console.error("THREE.js not fully loaded");
+        return null;
+    }
+
     if (!mesh || !mesh.geometry) {
         console.error("❌ Mesh or geometry is undefined!");
         return null;
@@ -16,7 +23,11 @@ export default function generateParticlesFromMesh(mesh, density = 15) {
 
     console.log("✅ Positions Loaded:", positions.length);
 
-    geometry.computeBoundingSphere();
+    // Ensure geometry has a bounding sphere
+    if (!geometry.boundingSphere) {
+        geometry.computeBoundingSphere();
+    }
+    
     const moonRadius = geometry.boundingSphere?.radius || 1;
     const center = new THREE.Vector3();
     if (geometry.boundingSphere) {
@@ -33,9 +44,6 @@ export default function generateParticlesFromMesh(mesh, density = 15) {
         const vector = new THREE.Vector3(x, y, z).sub(center).normalize();
         
         // Creating three distinct layers of particles
-        // Core layer: closer to surface
-        // Middle layer: mid-distance glow
-        // Outer layer: distant ethereal halo
         const rand = Math.random();
         let layerType;
         
@@ -175,67 +183,92 @@ export default function generateParticlesFromMesh(mesh, density = 15) {
         }
     }
 
-    const particlesGeometry = new THREE.BufferGeometry();
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particlePositions), 3));
-    particlesGeometry.setAttribute('size', new THREE.BufferAttribute(new Float32Array(particleSizes), 1));
-    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(particleColors), 3));
+    try {
+        // Create a new buffer geometry safely
+        const particlesGeometry = new THREE.BufferGeometry();
+        particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(particlePositions, 3));
+        particlesGeometry.setAttribute('size', new THREE.Float32BufferAttribute(particleSizes, 1));
+        particlesGeometry.setAttribute('color', new THREE.Float32BufferAttribute(particleColors, 3));
 
-    // Enhanced vertex shader with improved depth handling
-    const vertexShader = `
-        attribute float size;
-        attribute vec3 color;
-        varying vec3 vColor;
-        varying float vDepth;
+        // Enhanced vertex shader with improved depth handling
+        const vertexShader = `
+            attribute float size;
+            attribute vec3 color;
+            varying vec3 vColor;
+            varying float vDepth;
+            
+            void main() {
+                vColor = color;
+                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                
+                // Enhanced depth-based sizing for more dramatic visual
+                float depth = -mvPosition.z;
+                vDepth = depth;
+                
+                // Size adjustment based on depth
+                float sizeScale = 380.0 / depth;
+                gl_PointSize = size * sizeScale;
+                gl_Position = projectionMatrix * mvPosition;
+            }
+        `;
         
-        void main() {
-            vColor = color;
-            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        // Fragment shader with enhanced glow effect
+        const fragmentShader = `
+            varying vec3 vColor;
+            varying float vDepth;
             
-            // Enhanced depth-based sizing for more dramatic visual
-            float depth = -mvPosition.z;
-            vDepth = depth;
-            
-            // Size adjustment based on depth
-            float sizeScale = 380.0 / depth;
-            gl_PointSize = size * sizeScale;
-            gl_Position = projectionMatrix * mvPosition;
-        }
-    `;
-    
-    // Fragment shader with enhanced glow effect
-    const fragmentShader = `
-        varying vec3 vColor;
-        varying float vDepth;
+            void main() {
+                float dist = length(gl_PointCoord - vec2(0.5));
+                if (dist > 0.5) discard;
+                
+                // Softer edges with enhanced glow
+                float depthFactor = clamp(vDepth / 12.0, 0.4, 1.0);
+                float alpha = depthFactor * pow(1.0 - dist * 1.8, 1.5);
+                
+                // Enhanced center glow
+                float centerIntensity = 1.0 + (1.0 - dist * 2.0) * 0.4;
+                vec3 glowColor = vColor * centerIntensity;
+                
+                gl_FragColor = vec4(glowColor, alpha);
+            }
+        `;
+
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                opacity: { value: 1.0 }
+            },
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const particles = new THREE.Points(particlesGeometry, material);
+        particles.userData.metadata = particleMetadata;
         
-        void main() {
-            float dist = length(gl_PointCoord - vec2(0.5));
-            if (dist > 0.5) discard;
+        return particles;
+    } catch (error) {
+        console.error("Error creating particle system:", error);
+        
+        // Fallback to a simple particle system
+        try {
+            console.log("Attempting to create fallback particle system");
+            const particlesGeometry = new THREE.BufferGeometry();
+            particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(particlePositions, 3));
             
-            // Softer edges with enhanced glow
-            float depthFactor = clamp(vDepth / 12.0, 0.4, 1.0);
-            float alpha = depthFactor * pow(1.0 - dist * 1.8, 1.5);
+            const material = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.05,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
             
-            // Enhanced center glow
-            float centerIntensity = 1.0 + (1.0 - dist * 2.0) * 0.4;
-            vec3 glowColor = vColor * centerIntensity;
-            
-            gl_FragColor = vec4(glowColor, alpha);
+            return new THREE.Points(particlesGeometry, material);
+        } catch (fallbackError) {
+            console.error("Failed to create fallback particle system:", fallbackError);
+            return null;
         }
-    `;
-
-    const material = new THREE.ShaderMaterial({
-        uniforms: {
-            opacity: { value: 1.0 }
-        },
-        vertexShader: vertexShader,
-        fragmentShader: fragmentShader,
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-    });
-
-    const particles = new THREE.Points(particlesGeometry, material);
-    particles.userData.metadata = particleMetadata;
-    
-    return particles;
+    }
 }
