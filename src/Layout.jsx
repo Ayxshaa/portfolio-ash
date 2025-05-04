@@ -1,10 +1,10 @@
 // Layout.jsx
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Outlet, useLocation } from "react-router-dom";
-import MoonParticles from "./components/MoonParticles/MoonParticles";
-import Navbar from "./components/Navbar/Navbar";
+const Navbar = lazy(() => import("./components/Navbar/Navbar"));
+const MoonParticles = lazy(() => import("./components/MoonParticles/MoonParticles"));
 
 export default function Layout() {
   const location = useLocation();
@@ -12,7 +12,9 @@ export default function Layout() {
 
   return (
     <div className="w-screen overflow-x-hidden bg-black text-white">
-      <Navbar />
+      <Suspense fallback={null}>
+        <Navbar />
+      </Suspense>
       
       {/* Persistent Canvas with MoonParticles */}
       <div 
@@ -47,3 +49,4 @@ export default function Layout() {
     </div>
   );
 }
+

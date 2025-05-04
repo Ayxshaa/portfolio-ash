@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Loader from "./components/UI/Loader";
-import Layout from "./Layout"; // Import the new Layout component
-import MainContent from "./MainContent";
-import Gallery from "./components/UI/Gallery";
+import { lazy } from "react";
+const Loader = lazy(() => import("./components/UI/Loader"));
+const Layout = lazy(() => import("./Layout")); // Import the new Layout component
+const MainContent = lazy(() => import("./MainContent"));
+const Gallery = lazy(() => import("./components/UI/Gallery"));
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -11,15 +12,19 @@ export default function App() {
   return (
     <>
       {isLoading ? (
-        <Loader onComplete={() => setIsLoading(false)} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Loader onComplete={() => setIsLoading(false)} />
+        </Suspense>
       ) : (
         <Router>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<MainContent />} />
-              <Route path="/gallery" element={<Gallery />} />
-            </Route>
-          </Routes>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<MainContent />} />
+                <Route path="/gallery" element={<Gallery />} />
+              </Route>
+            </Routes>
+          </Suspense>
         </Router>
       )}
     </>
