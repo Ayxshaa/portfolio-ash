@@ -10,38 +10,58 @@ export default defineConfig({
     visualizer({ open: true }) // Optional: visualize chunk sizes
   ],
   build: {
-    chunkSizeWarningLimit: 1000, 
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Create more stable chunks
+        manualChunks(id) {
+          // Put all react dependencies in the same chunk
+          if (id.includes('node_modules/react') || 
+              id.includes('node_modules/scheduler') ||
+              id.includes('node_modules/use-sync-external-store')) {
+            return 'react-core';
+          }
+          
+          // Group Three.js related packages, but keep React Three Fiber separate
+          if (id.includes('node_modules/three')) {
+            return 'three-core';
+          }
+          
+          // Keep React Three Fiber together
+          if (id.includes('node_modules/@react-three/fiber') || 
+              id.includes('node_modules/@react-three/drei')) {
+            return 'react-three';
+          }
+          
+          // Group postprocessing separately
+          if (id.includes('node_modules/postprocessing')) {
+            return 'postprocessing';
+          }
+          
+          // Animation libraries
+          if (id.includes('node_modules/gsap') || 
+              id.includes('node_modules/framer-motion')) {
+            return 'animation';
+          }
+          
+          // All other node modules
           if (id.includes('node_modules')) {
-            if (id.includes('three')) return 'three';
-            if (id.includes('postprocessing')) return 'three'; // Bundle with three
-            if (id.includes('@react-three/fiber')) return 'react-three';
-            if (id.includes('@react-three/drei')) return 'react-three';
-            if (id.includes('framer-motion')) return 'animation';
-            if (id.includes('gsap')) return 'animation';
-            if (id.includes('react') || id.includes('scheduler')) return 'react';
-            return 'vendor'; // All other dependencies
+            return 'vendor';
           }
         }
       }
     },
-    // Improve output stability
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        // Preserve class and function names to avoid initialization problems
-        keep_classnames: true,
-        keep_fnames: true
-      }
-    }
+    // Use esbuild for minification as it's more reliable with React's JSX
+    minify: 'esbuild',
   },
   optimizeDeps: {
-    include: ['three', 'postprocessing']
+    include: ['react', 'react-dom', 'three', 'postprocessing', '@react-three/fiber', '@react-three/drei']
   },
   resolve: {
-    dedupe: ['three']
+    dedupe: ['react', 'react-dom', 'three']
+  },
+  // Ensure proper alias for react in case of multiple versions
+  alias: {
+    'react': './node_modules/react',
+    'react-dom': './node_modules/react-dom'
   }
 });
