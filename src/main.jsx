@@ -1,14 +1,17 @@
-import React from 'react'; // Explicit React import
+import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { ReactLayoutProvider } from './ReactLayoutProvider';
 import App from './App.jsx';
 import './index.css';
 
-// Create the root outside of any component to ensure React context is properly established
+// Create the root outside of any component
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-// Consider wrapping your app with StrictMode for development
+// Wrap the entire app with the ReactLayoutProvider
 root.render(
   <React.StrictMode>
-    <App />
+    <ReactLayoutProvider>
+      <App />
+    </ReactLayoutProvider>
   </React.StrictMode>
 );

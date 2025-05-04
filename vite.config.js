@@ -7,61 +7,71 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    visualizer({ open: true }) // Optional: visualize chunk sizes
+    visualizer({ open: true })
   ],
   build: {
     chunkSizeWarningLimit: 1000,
+    // Use a simpler chunk strategy that guarantees React is available before @react-three/fiber
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // Put all react dependencies in the same chunk
-          if (id.includes('node_modules/react') || 
-              id.includes('node_modules/scheduler') ||
-              id.includes('node_modules/use-sync-external-store')) {
-            return 'react-core';
+        // Use a modified chunk strategy for better dependency ordering
+        manualChunks: {
+          // All React-related code in one chunk that loads first
+          'react-vendor': [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            'scheduler',
+            'use-sync-external-store'
+          ],
+          // Three.js in a separate chunk
+          'three-vendor': ['three'],
+          // Everything else in vendor
+          'vendor': [
+            '@react-three/fiber',
+            '@react-three/drei',
+            'postprocessing',
+            'gsap',
+            'framer-motion'
+          ]
+        },
+        // Ensure chunks are loaded in correct order
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: (chunkInfo) => {
+          // Give React chunk lower alphabetical name to ensure it loads first
+          const name = chunkInfo.name;
+          if (name === 'react-vendor') {
+            return 'assets/a-react-[hash].js';
           }
-          
-          // Group Three.js related packages, but keep React Three Fiber separate
-          if (id.includes('node_modules/three')) {
-            return 'three-core';
-          }
-          
-          // Keep React Three Fiber together
-          if (id.includes('node_modules/@react-three/fiber') || 
-              id.includes('node_modules/@react-three/drei')) {
-            return 'react-three';
-          }
-          
-          // Group postprocessing separately
-          if (id.includes('node_modules/postprocessing')) {
-            return 'postprocessing';
-          }
-          
-          // Animation libraries
-          if (id.includes('node_modules/gsap') || 
-              id.includes('node_modules/framer-motion')) {
-            return 'animation';
-          }
-          
-          // All other node modules
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+          return 'assets/[name]-[hash].js';
         }
       }
     },
-    // Use esbuild for minification as it's more reliable with React's JSX
-    minify: 'esbuild',
+    // Use terser for better control over minification
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false, // Keep console for debugging
+        keep_classnames: true,
+        keep_fnames: true
+      }
+    }
   },
+  // Force all React dependencies to be pre-bundled
   optimizeDeps: {
-    include: ['react', 'react-dom', 'three', 'postprocessing', '@react-three/fiber', '@react-three/drei']
+    include: [
+      'react', 
+      'react-dom', 
+      'react/jsx-runtime', 
+      'scheduler',
+      'three',
+      '@react-three/fiber',
+      '@react-three/drei'
+    ],
+    force: true
   },
+  // Ensure only one copy of React and Three.js
   resolve: {
     dedupe: ['react', 'react-dom', 'three']
-  },
-  // Ensure proper alias for react in case of multiple versions
-  alias: {
-    'react': './node_modules/react',
-    'react-dom': './node_modules/react-dom'
   }
 });
