@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei'; // Using useGLTF hook for efficient model loading
+import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import generateParticlesFromMesh from './UseGenerateParticles';
 
 // Preload the model to improve load times
-useGLTF.preload('/models/moon.glb'); // Path relative to the 'public' directory
+useGLTF.preload('/models/moon.glb');
 
 export default function MoonParticlesCore({ 
   setMoonRef, 
@@ -16,50 +16,85 @@ export default function MoonParticlesCore({
   const { scene } = useThree();
 
   // Lazy load the model using useGLTF hook for better performance
-  const { scene: moonModel } = useGLTF('/models/moon.glb'); // Path relative to the 'public' directory
+  const { scene: moonModel } = useGLTF('/models/moon.glb');
   const textureLoader = new THREE.TextureLoader();
 
   useEffect(() => {
+    console.log("Moon model loaded:", moonModel);
+    
+    // Debug: Log the structure of the model to understand what we're working with
+    console.log("Model children:", moonModel.children);
+    
     let moonMesh = null;
-
-    // Traverse the model to find the mesh (moon) and apply texture and material properties
+    
+    // First attempt: Check if there's a direct mesh in the scene
     moonModel.traverse((child) => {
+      console.log("Child found:", child.type, child.name);
       if (child.isMesh) {
+        console.log("Mesh found:", child.name);
         moonMesh = child;
-        moonMesh.castShadow = true;
-        moonMesh.receiveShadow = true;
       }
     });
-
+    
+    // If no mesh was found, create a simple sphere as a fallback
     if (!moonMesh) {
-      console.error("❌ Moon mesh not found!");
-      return;
-    }
-
-    // Load the texture for the moon
-    textureLoader.load('/models/moon_first.jpg', (texture) => {
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-
-      // Apply a warmer emissive color to the moon texture
-      moonMesh.material = new THREE.MeshStandardMaterial({
-        map: texture,
+      console.warn("No mesh found in the model, creating a sphere as fallback");
+      const geometry = new THREE.SphereGeometry(1, 32, 32);
+      const material = new THREE.MeshStandardMaterial({
+        color: 0xaaaaaa,
         roughness: 0.9,
         metalness: 0.1,
-        emissive: new THREE.Color(0x331100), // Warm emissive color
-        emissiveMap: texture,
-        emissiveIntensity: 0.2,
       });
+      moonMesh = new THREE.Mesh(geometry, material);
+      moonMesh.name = "FallbackMoon";
+    }
+    
+    moonMesh.castShadow = true;
+    moonMesh.receiveShadow = true;
 
-      // Fade-in animation for the moon material
-      gsap.fromTo(moonMesh.material, 
-        { opacity: 0 }, 
-        { opacity: 1, duration: 3.0, ease: "power2.out" }
-      );
-    });
+    // Load the texture for the moon
+    textureLoader.load('/models/moon_first.jpg', 
+      // Success callback
+      (texture) => {
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+
+        // Apply texture to the moon material
+        moonMesh.material = new THREE.MeshStandardMaterial({
+          map: texture,
+          roughness: 0.9,
+          metalness: 0.1,
+          emissive: new THREE.Color(0x331100),
+          emissiveMap: texture,
+          emissiveIntensity: 0.2,
+        });
+
+        // Fade-in animation for the moon material
+        gsap.fromTo(moonMesh.material, 
+          { opacity: 0 }, 
+          { opacity: 1, duration: 3.0, ease: "power2.out" }
+        );
+      },
+      // Progress callback
+      undefined,
+      // Error callback
+      (error) => {
+        console.error("Error loading moon texture:", error);
+      }
+    );
 
     // Set moon mesh properties
     moonMesh.scale.set(1, 1, 1);
+    
+    // Ensure material is created and set to transparent before animations
+    if (!moonMesh.material) {
+      moonMesh.material = new THREE.MeshStandardMaterial({
+        color: 0xaaaaaa,
+        roughness: 0.9,
+        metalness: 0.1,
+      });
+    }
+    
     moonMesh.material.transparent = true;
     moonMesh.position.set(0, 1, 0);
 
@@ -67,10 +102,10 @@ export default function MoonParticlesCore({
     setMoonRef(moonMesh);
 
     // Generate and animate enhanced particles around the moon mesh
-    const particles = generateParticlesFromMesh(moonMesh, 15); // Increased particle density
+    const particles = generateParticlesFromMesh(moonMesh, 15);
     if (particles) {
       setParticlesRef(particles);
-      particles.scale.set(1.2, 1.2, 1.2); // Expanded particle scale for visual impact
+      particles.scale.set(1.2, 1.2, 1.2);
       particles.position.set(0, 1, 0);
 
       // Animation for particles scaling in and out with a breathing effect
@@ -89,11 +124,13 @@ export default function MoonParticlesCore({
         });
 
       // Initial fade-in effect for particles
-      gsap.fromTo(
-        particles.material.uniforms.opacity,
-        { value: 0 },
-        { value: 1, duration: 4, ease: "power2.out" }
-      );
+      if (particles.material && particles.material.uniforms && particles.material.uniforms.opacity) {
+        gsap.fromTo(
+          particles.material.uniforms.opacity,
+          { value: 0 },
+          { value: 1, duration: 4, ease: "power2.out" }
+        );
+      }
 
       // Add particles to the scene
       scene.add(particles);
@@ -104,9 +141,25 @@ export default function MoonParticlesCore({
 
     // Cleanup the effect if the component unmounts
     return () => {
-      // Clean up resources if needed (remove the moon and particles)
-      scene.remove(moonMesh);
-      scene.remove(particles);
+      if (moonMesh) {
+        scene.remove(moonMesh);
+        if (moonMesh.material) {
+          moonMesh.material.dispose();
+        }
+        if (moonMesh.geometry) {
+          moonMesh.geometry.dispose();
+        }
+      }
+      
+      if (particles) {
+        scene.remove(particles);
+        if (particles.material) {
+          particles.material.dispose();
+        }
+        if (particles.geometry) {
+          particles.geometry.dispose();
+        }
+      }
     };
   }, [moonModel, scene, setMoonRef, setParticlesRef]);
 

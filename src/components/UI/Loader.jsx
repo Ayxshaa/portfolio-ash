@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const Loader = ({ onComplete }) => {
   const name = "AYESHA";
-  const fullName = "AYESHA QURESHI";
+  const fullName = "Q U R E S H I";
 
   const [percent, setPercent] = useState(0);
   const [showFullName, setShowFullName] = useState(false);
