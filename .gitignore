@@ -11,6 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
+# Ignore bundle visualizer output
+stats.html
+
 
 # Editor directories and files
 .vscode/*
