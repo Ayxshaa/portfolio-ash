@@ -17,6 +17,7 @@ const mediaItems = [
   { src: "/Gallery/eighth.jpg" },
   { src: "/Gallery/thirteen.jpg" },
   { src: "/Gallery/fourth.jpg" },
+  {src: "/Gallery/jacky.jpg" },
 ];
 
 const Gallery = () => {

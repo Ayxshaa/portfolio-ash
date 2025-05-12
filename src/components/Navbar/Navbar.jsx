@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { scroller } from "react-scroll";
 
 const Navbar = () => {
@@ -9,36 +9,43 @@ const Navbar = () => {
   const [hideNavbar, setHideNavbar] = useState(false);
   const [prevScrollY, setPrevScrollY] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if the current path is the gallery page
+  const isGalleryPage = location.pathname === "/gallery";
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+    // Only add scroll event listener if not on gallery page
+    if (!isGalleryPage) {
+      const handleScroll = () => {
+        const currentScrollY = window.scrollY;
 
-      // Hide navbar when scrolling down, show when scrolling up
-      if (currentScrollY > prevScrollY && currentScrollY > 50) {
-        setHideNavbar(true);
-      } else {
-        setHideNavbar(false);
-      }
-
-      setPrevScrollY(currentScrollY);
-
-      setScrolled(currentScrollY > 10);
-      const sections = ["home", "projects", "about"];
-      sections.forEach((id) => {
-        const section = document.getElementById(id);
-        if (section) {
-          const rect = section.getBoundingClientRect();
-          if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(id);
-          }
+        // Hide navbar when scrolling down, show when scrolling up
+        if (currentScrollY > prevScrollY && currentScrollY > 50) {
+          setHideNavbar(true);
+        } else {
+          setHideNavbar(false);
         }
-      });
-    };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [prevScrollY]);
+        setPrevScrollY(currentScrollY);
+
+        setScrolled(currentScrollY > 10);
+        const sections = ["home", "projects", "about"];
+        sections.forEach((id) => {
+          const section = document.getElementById(id);
+          if (section) {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= 100 && rect.bottom >= 100) {
+              setActiveSection(id);
+            }
+          }
+        });
+      };
+
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [prevScrollY, isGalleryPage]);
 
   const scrollToSection = (id) => {
     setMobileMenuOpen(false);
@@ -54,6 +61,11 @@ const Navbar = () => {
     navigate("/gallery");
   };
 
+  // If we're on the gallery page, don't render the navbar
+  if (isGalleryPage) {
+    return null;
+  }
+  
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent ${
