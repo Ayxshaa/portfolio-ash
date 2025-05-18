@@ -12,23 +12,23 @@ const Projects = () => {
       description: "A responsive portfolio website built with React and Tailwind CSS.",
       image: "./Gallery/Project1.png",
       technologies: ["React", "Tailwind CSS", "JavaScript"],
-      link: "https://example.com/project1",
+      link: "https://ayeshashhh.netlify.app/",
     },
     {
       id: 2,
       title: "Chat-Application:A4 Zone",
       description: "Real-time chat application with user authentication and payment integration.",
       image: "./Gallery/ChatApplication.png",
-      technologies: ["React", "Node.js", "MongoDB", "Stripe"],
-      link: "https://example.com/project2",
+      technologies: ["React", "tawilwind", "MongoDB", "JAVA", "AI integration"],
+      link: "https://a4zone.onrender.com/",
     },
     {
       id: 3,
       title: "Event Management ",
       description: "A web application for managing events, including ticket booking and user registration.",
       image: "./Gallery/EventManagement.png",
-      technologies: ["React", "Chart.js", "Firebase", "API Integration"],
-      link: "https://example.com/project3",
+      technologies: ["React", "MongoDB", "Express", "Node.js"],
+      link: "https://flowevent.netlify.app/",
     },
   ];
 
