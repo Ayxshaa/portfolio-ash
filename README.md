@@ -28,5 +28,4 @@ This project showcases my work as a frontend designer and creative developer, bl
 
 ---
 
-## 🧩 Folder Structure
 
