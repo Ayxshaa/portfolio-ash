@@ -1,4 +1,4 @@
-// Updated version of MoonParticles.jsx with optimized React imports
+// Updated version of MoonParticles.jsx with loading callback
 import React, { useRef, useEffect, useState } from 'react'; // Explicit React import
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
@@ -8,7 +8,7 @@ import MoonParticlesAnimation from './MoonParticlesAnimation';
 import Title from '../UI/Title';
 
 // Using explicit React.memo can help with certain bundling issues
-const MoonParticles = React.memo(() => {
+const MoonParticles = React.memo(({ onLoad }) => {
     // Use refs for all 3D objects and interaction states
     const moonRef = useRef();
     const particlesRef = useRef();
@@ -21,6 +21,7 @@ const MoonParticles = React.memo(() => {
     const screenMouseRef = useRef(new THREE.Vector2(0, 0));
     
     const [initialRenderComplete, setInitialRenderComplete] = useState(false);
+    const [componentsLoaded, setComponentsLoaded] = useState(false);
     
     const location = useLocation();
     
@@ -37,10 +38,34 @@ const MoonParticles = React.memo(() => {
     
     const setMoonRef = (mesh) => {
         moonRef.current = mesh;
+        // Check if both moon and particles are ready
+        checkIfFullyLoaded();
     };
     
     const setParticlesRef = (particles) => {
         particlesRef.current = particles;
+        // Check if both moon and particles are ready
+        checkIfFullyLoaded();
+    };
+
+    // Function to check if everything is loaded
+    const checkIfFullyLoaded = () => {
+        if (moonRef.current && particlesRef.current && !componentsLoaded) {
+            setComponentsLoaded(true);
+            // Small delay to ensure everything is properly initialized
+            setTimeout(() => {
+                if (onLoad) {
+                    console.log("Moon and particles fully loaded");
+                    onLoad();
+                }
+            }, 500);
+        }
+    };
+
+    // Handle when MoonParticlesCore is fully ready
+    const handleCoreReady = () => {
+        console.log("MoonParticlesCore reported ready");
+        checkIfFullyLoaded();
     };
     
     useEffect(() => {
@@ -97,6 +122,7 @@ const MoonParticles = React.memo(() => {
                 setMoonRef={setMoonRef}
                 setParticlesRef={setParticlesRef}
                 particleSystemStateRef={particleSystemStateRef}
+                onComponentReady={handleCoreReady}
                 initialSettings={{
                     particleDensity: 10,
                     particleScale: 0.95,

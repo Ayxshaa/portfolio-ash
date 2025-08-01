@@ -1,4 +1,4 @@
-// Create a new file named ReactThreeWrapper.jsx
+
 import React, { Suspense } from 'react';
 // Import the React instance from our provider to ensure consistency
 import { React as ProviderReact } from './ReactLayoutProvider';

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
@@ -12,13 +12,34 @@ useGLTF.preload('/models/moon.glb');
 export default function MoonParticlesCore({ 
   setMoonRef, 
   setParticlesRef, 
-  particleSystemStateRef 
+  particleSystemStateRef,
+  onComponentReady // New prop to signal when component is fully loaded
 }) {
   const { scene } = useThree();
+  const loadingStateRef = useRef({
+    modelLoaded: false,
+    textureLoaded: false,
+    particlesGenerated: false,
+    animationsStarted: false
+  });
 
   // Lazy load the model using useGLTF hook for better performance
   const { scene: moonModel } = useGLTF('/models/moon.glb');
   const textureLoader = new THREE.TextureLoader();
+
+  // Function to check if everything is loaded and ready
+  const checkIfFullyReady = () => {
+    const state = loadingStateRef.current;
+    if (state.modelLoaded && state.textureLoaded && state.particlesGenerated && state.animationsStarted) {
+      console.log("MoonParticlesCore fully loaded and ready");
+      if (onComponentReady) {
+        // Small delay to ensure all animations have started
+        setTimeout(() => {
+          onComponentReady();
+        }, 100);
+      }
+    }
+  };
 
   useEffect(() => {
     console.log("Moon model loaded:", moonModel);
@@ -53,10 +74,14 @@ export default function MoonParticlesCore({
     moonMesh.castShadow = true;
     moonMesh.receiveShadow = true;
 
+    // Mark model as loaded
+    loadingStateRef.current.modelLoaded = true;
+
     // Load the texture for the moon
     textureLoader.load('/models/moon_first.jpg', 
       // Success callback
       (texture) => {
+        console.log("Moon texture loaded successfully");
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
 
@@ -70,17 +95,34 @@ export default function MoonParticlesCore({
           emissiveIntensity: 0.2,
         });
 
+        // Mark texture as loaded
+        loadingStateRef.current.textureLoaded = true;
+
         // Fade-in animation for the moon material
         gsap.fromTo(moonMesh.material, 
           { opacity: 0 }, 
-          { opacity: 1, duration: 3.0, ease: "power2.out" }
+          { 
+            opacity: 1, 
+            duration: 3.0, 
+            ease: "power2.out",
+            onComplete: () => {
+              loadingStateRef.current.animationsStarted = true;
+              checkIfFullyReady();
+            }
+          }
         );
       },
       // Progress callback
-      undefined,
+      (progress) => {
+        console.log("Texture loading progress:", (progress.loaded / progress.total * 100) + '%');
+      },
       // Error callback
       (error) => {
         console.error("Error loading moon texture:", error);
+        // Even if texture fails, mark as loaded so we don't block forever
+        loadingStateRef.current.textureLoaded = true;
+        loadingStateRef.current.animationsStarted = true;
+        checkIfFullyReady();
       }
     );
 
@@ -105,9 +147,13 @@ export default function MoonParticlesCore({
     // Generate and animate enhanced particles around the moon mesh
     const particles = generateParticlesFromMesh(moonMesh, 15);
     if (particles) {
+      console.log("Particles generated successfully");
       setParticlesRef(particles);
       particles.scale.set(1.2, 1.2, 1.2);
       particles.position.set(0, 1, 0);
+
+      // Mark particles as generated
+      loadingStateRef.current.particlesGenerated = true;
 
       // Animation for particles scaling in and out with a breathing effect
       gsap.timeline()
@@ -135,10 +181,17 @@ export default function MoonParticlesCore({
 
       // Add particles to the scene
       scene.add(particles);
+    } else {
+      console.warn("Failed to generate particles");
+      // Mark as generated even if failed, so we don't block loading
+      loadingStateRef.current.particlesGenerated = true;
     }
 
     // Add moon mesh to the scene
     scene.add(moonMesh);
+
+    // Check if ready (in case texture is cached and loads immediately)
+    checkIfFullyReady();
 
     // Cleanup the effect if the component unmounts
     return () => {
