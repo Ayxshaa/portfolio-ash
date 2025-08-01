@@ -1,12 +1,31 @@
-# React + Vite
+# Ayesha Qureshi — Portfolio Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to my personal portfolio website!  
+This project showcases my work as a frontend designer and creative developer, blending stunning UI/UX with advanced web animations using React.js, Framer Motion, and Three.js.
 
-Currently, two official plugins are available:
+🌐 [Live Site »](https://ayeshashhh.netlify.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 🎨 **Sleek UI/UX Design** – Minimal, elegant, and user-focused interface
+- 🌀 **Smooth Page Transitions** – Powered by Framer Motion
+- 🧊 **3D Visuals & Effects** – Built using Three.js and React Three Fiber
+- 🖼️ **Animated Projects Showcase** – Scroll-based transitions and hover effects
+- 🧭 **Interactive Hero Section** – Background reacts to cursor movement
+- 📱 **Responsive Design** – Optimized for all screen sizes
+
+---
+
+## 📁 Tech Stack
+
+- **Frontend:** React.js
+- **Animations:** Framer Motion, GSAP
+- **3D Graphics:** Three.js, React Three Fiber
+- **Styling:** Tailwind CSS, Custom Fonts
+- **Deployment:** Netlify
+
+---
+
+
