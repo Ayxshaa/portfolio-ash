@@ -60,7 +60,7 @@ const GoldenParticleAbout = () => {
         }
       },
       {
-        threshold: 0.3, // Trigger when 30% of section is visible
+        threshold: 0.3,
       }
     );
 
@@ -89,27 +89,63 @@ const GoldenParticleAbout = () => {
     window.addEventListener('resize', resizeCanvas);
 
     class Particle {
-      constructor(delay = 0) {
+      constructor(delay = 0, streamIndex = 0, layerType = 'middle') {
         this.delay = delay;
         this.age = -delay;
-        this.lifetime = 3500; // Fixed lifetime for one-time animation
+        this.lifetime = 6000;
+        this.streamIndex = streamIndex;
+        this.layerType = layerType;
         
-        // Much smaller, crisp particles
-        this.baseSize = 0.8 + Math.random() * 1.5;
+        // Size based on layer (matching moon particle system)
+        switch (layerType) {
+          case 'core':
+            this.baseSize = 0.8 + Math.random() * 1.2; // Larger core particles
+            break;
+          case 'middle':
+            this.baseSize = 0.5 + Math.random() * 0.8;
+            break;
+          case 'outer':
+            this.baseSize = 0.3 + Math.random() * 0.5; // Smaller outer particles
+            break;
+        }
         this.size = this.baseSize;
         
-        // Golden color
-        this.hue = 38 + Math.random() * 12;
-        this.brightness = 65 + Math.random() * 25;
+        // Color based on layer (warmer core, cooler outer)
+        let warmth, redShift;
+        switch (layerType) {
+          case 'core':
+            warmth = 0.9 + Math.random() * 0.1;
+            redShift = 0.1 + Math.random() * 0.3;
+            this.r = warmth;
+            this.g = warmth * (0.7 + Math.random() * 0.2);
+            this.b = warmth * 0.5;
+            break;
+          case 'middle':
+            warmth = 0.75 + Math.random() * 0.25;
+            this.r = warmth;
+            this.g = warmth * (0.8 + Math.random() * 0.2);
+            this.b = warmth * (0.5 + Math.random() * 0.3);
+            break;
+          case 'outer':
+            warmth = 0.7 + Math.random() * 0.3;
+            this.r = warmth;
+            this.g = warmth * (0.9 + Math.random() * 0.1);
+            this.b = warmth * (0.7 + Math.random() * 0.2);
+            break;
+        }
+        
+        this.shimmerPhase = Math.random() * Math.PI * 2;
+        this.shimmerSpeed = 0.015 + Math.random() * 0.025;
         
         this.depth = Math.random();
         
-        // For S-curve flow
-        this.flowOffset = Math.random() * 20;
-        this.verticalOffset = Math.random() * 100 - 50;
+        // Wave properties based on layer - TIGHTER STREAMS
+        const baseAmplitude = layerType === 'core' ? 18 : (layerType === 'middle' ? 25 : 35);
+        this.waveAmplitude = baseAmplitude + Math.random() * 10;
+        this.flowOffset = (streamIndex / 6) * Math.PI * 2;
       }
       
-      getPosition(time, canvas) {
+      getPosition(canvas) {
         const progress = this.age / this.lifetime;
         
         if (progress < 0) return null;
@@ -118,109 +154,161 @@ const GoldenParticleAbout = () => {
         const w = canvas.width;
         const h = canvas.height;
         
-        let x, y, opacity, size;
+        const easedProgress = this.easeInOutQuart(progress);
         
-        // Smooth S-curve path from top-left to bottom-right
-        const easedProgress = this.easeInOutCubic(progress);
+        const startX = w * 0.05;
+        const startY = h * 0.05;
+        const endX = w * 0.95;
+        const endY = h * 0.95;
         
-        // Start position (top-left area)
-        const startX = w * 0.1;
-        const startY = h * 0.15;
+        const baseX = startX + (endX - startX) * easedProgress;
+        const baseY = startY + (endY - startY) * easedProgress;
         
-        // End position (bottom-right area)
-        const endX = w * 0.9;
-        const endY = h * 0.85;
+        const diagonalAngle = Math.atan2(endY - startY, endX - startX);
+        const perpAngle = diagonalAngle + Math.PI / 2;
         
-        // Linear progression
-        x = startX + (endX - startX) * easedProgress;
-        y = startY + (endY - startY) * easedProgress;
+        // Perfect sine wave with multiple cycles
+        const wavePhase = easedProgress * Math.PI * 9 + this.flowOffset;
+        const waveAmplitude = this.waveAmplitude * (1 - easedProgress * 0.15);
+        const waveOffset = Math.sin(wavePhase) * waveAmplitude;
         
-        // Create smooth S-curve wave
-        // Using sine wave that creates the flowing S shape
-        const waveProgress = progress * Math.PI * 2; // Two full waves for S shape
-        const amplitude = Math.min(w, h) * 0.15; // Wave height
+        let x = baseX + Math.cos(perpAngle) * waveOffset;
+        let y = baseY + Math.sin(perpAngle) * waveOffset;
         
-        // Horizontal wave (creates the S)
-        const wave = Math.sin(waveProgress) * amplitude * Math.sin(progress * Math.PI);
-        x += wave;
+        // Organic variation
+        const microPhase = progress * Math.PI * 12 + this.shimmerPhase;
+        x += Math.sin(microPhase) * 2;
+        y += Math.cos(microPhase * 0.8) * 2;
         
-        // Add subtle vertical variation
-        y += this.verticalOffset * Math.sin(progress * Math.PI);
-        
-        // Add micro-variations for organic feel
-        const microX = Math.sin(progress * Math.PI * 8 + this.flowOffset) * 8;
-        const microY = Math.cos(progress * Math.PI * 6 + this.flowOffset) * 6;
-        x += microX;
-        y += microY;
-        
-        // Opacity: fade in, stay bright, fade out
-        if (progress < 0.1) {
-          opacity = progress / 0.1;
-        } else if (progress > 0.85) {
-          opacity = (1 - progress) / 0.15;
-        } else {
-          opacity = 0.85 + Math.sin(progress * Math.PI * 3) * 0.15;
+        // Opacity with layer-specific brightness - INCREASED
+        let baseOpacity;
+        switch (this.layerType) {
+          case 'core':
+            baseOpacity = 1.0;
+            break;
+          case 'middle':
+            baseOpacity = 0.95;
+            break;
+          case 'outer':
+            baseOpacity = 0.85;
+            break;
         }
         
-        // Size variation along the path
-        size = this.baseSize * (0.8 + Math.sin(progress * Math.PI) * 0.4);
+        let opacity;
+        if (progress < 0.1) {
+          opacity = this.easeOutCubic(progress / 0.1) * baseOpacity;
+        } else if (progress > 0.9) {
+          opacity = this.easeInCubic((1 - progress) / 0.1) * baseOpacity;
+        } else {
+          opacity = baseOpacity * (0.9 + Math.sin(progress * Math.PI * 3) * 0.1);
+        }
+        
+        const sizePulse = 0.9 + Math.sin(progress * Math.PI * 5 + this.shimmerPhase) * 0.1;
+        const size = this.baseSize * sizePulse;
         
         return { x, y, opacity, size, progress };
       }
       
-      easeInOutCubic(t) {
-        return t < 0.5
-          ? 4 * t * t * t
-          : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      easeInOutQuart(t) {
+        return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+      }
+      
+      easeInCubic(t) {
+        return t * t * t;
+      }
+      
+      easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
       }
       
       update(deltaTime) {
         this.age += deltaTime;
+        this.shimmerPhase += this.shimmerSpeed * deltaTime;
       }
       
       draw(ctx, canvas, time) {
-        const pos = this.getPosition(time, canvas);
+        const pos = this.getPosition(canvas);
         if (!pos) return false;
         
         const { x, y, opacity, size } = pos;
         
-        // Outer glow (much smaller and crisper)
-        const outerGradient = ctx.createRadialGradient(x, y, 0, x, y, size * 4);
-        outerGradient.addColorStop(0, `hsla(${this.hue}, 100%, ${this.brightness}%, ${opacity * 0.8})`);
-        outerGradient.addColorStop(0.3, `hsla(${this.hue}, 100%, ${this.brightness * 0.7}%, ${opacity * 0.4})`);
-        outerGradient.addColorStop(1, `hsla(${this.hue}, 100%, ${this.brightness * 0.5}%, 0)`);
+        // Shimmer effect
+        const shimmer = 0.92 + Math.sin(this.shimmerPhase + time * 0.008) * 0.08;
+        const shimmerR = Math.min(1.0, this.r * shimmer);
+        const shimmerG = Math.min(1.0, this.g * shimmer);
+        const shimmerB = Math.min(1.0, this.b * shimmer);
         
-        ctx.fillStyle = outerGradient;
+        // Depth-based glow (matching moon particle shader)
+        const depthFactor = 0.4 + this.depth * 0.6;
+        
+        // Outer glow (soft halo)
+        const glowRadius = size * 4.5;
+        const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
+        
+        glowGradient.addColorStop(0, `rgba(${Math.floor(shimmerR * 255)}, ${Math.floor(shimmerG * 255)}, ${Math.floor(shimmerB * 255)}, ${opacity * depthFactor * 0.8})`);
+        glowGradient.addColorStop(0.3, `rgba(${Math.floor(shimmerR * 255 * 0.9)}, ${Math.floor(shimmerG * 255 * 0.9)}, ${Math.floor(shimmerB * 255 * 0.9)}, ${opacity * depthFactor * 0.4})`);
+        glowGradient.addColorStop(0.6, `rgba(${Math.floor(shimmerR * 255 * 0.7)}, ${Math.floor(shimmerG * 255 * 0.7)}, ${Math.floor(shimmerB * 255 * 0.7)}, ${opacity * depthFactor * 0.2})`);
+        glowGradient.addColorStop(1, `rgba(${Math.floor(shimmerR * 255)}, ${Math.floor(shimmerG * 255)}, ${Math.floor(shimmerB * 255)}, 0)`);
+        
+        ctx.fillStyle = glowGradient;
         ctx.beginPath();
-        ctx.arc(x, y, size * 4, 0, Math.PI * 2);
+        ctx.arc(x, y, glowRadius, 0, Math.PI * 2);
         ctx.fill();
         
-        // Core bright spot (crisp center)
-        const coreGradient = ctx.createRadialGradient(x, y, 0, x, y, size * 1.5);
-        coreGradient.addColorStop(0, `hsla(${this.hue}, 100%, 98%, ${opacity})`);
-        coreGradient.addColorStop(0.5, `hsla(${this.hue}, 100%, ${this.brightness}%, ${opacity * 0.8})`);
-        coreGradient.addColorStop(1, `hsla(${this.hue}, 100%, ${this.brightness * 0.6}%, ${opacity * 0.3})`);
+        // Bright core with enhanced center intensity
+        const coreRadius = size * 1.5;
+        const coreGradient = ctx.createRadialGradient(x, y, 0, x, y, coreRadius);
+        
+        const centerIntensity = 1.4 + (1 - this.depth * 0.3);
+        const whiteIntensity = 0.96 + Math.sin(this.shimmerPhase * 2) * 0.04;
+        
+        coreGradient.addColorStop(0, `rgba(255, 255, 255, ${opacity * whiteIntensity * depthFactor})`);
+        coreGradient.addColorStop(0.4, `rgba(${Math.floor(shimmerR * 255 * centerIntensity)}, ${Math.floor(shimmerG * 255 * centerIntensity)}, ${Math.floor(shimmerB * 255 * centerIntensity)}, ${opacity * depthFactor * 0.9})`);
+        coreGradient.addColorStop(0.7, `rgba(${Math.floor(shimmerR * 255)}, ${Math.floor(shimmerG * 255)}, ${Math.floor(shimmerB * 255)}, ${opacity * depthFactor * 0.6})`);
+        coreGradient.addColorStop(1, `rgba(${Math.floor(shimmerR * 255)}, ${Math.floor(shimmerG * 255)}, ${Math.floor(shimmerB * 255)}, ${opacity * depthFactor * 0.2})`);
         
         ctx.fillStyle = coreGradient;
         ctx.beginPath();
-        ctx.arc(x, y, size * 1.5, 0, Math.PI * 2);
+        ctx.arc(x, y, coreRadius, 0, Math.PI * 2);
         ctx.fill();
         
         return true;
       }
     }
 
-    // Create particles only once
+    // Create dense layered particle streams - MORE STREAMS, DENSER
     if (!hasAnimatedRef.current) {
       hasAnimatedRef.current = true;
       
-      const particleCount = 400; // More particles for dense trail
-      const totalDuration = 2500; // Stagger over 2.5 seconds
+      const streams = 6; // Reduced to 6 lines
+      const particlesPerStream = 650; // Increased density per stream
+      const totalDuration = 5500;
       
-      for (let i = 0; i < particleCount; i++) {
-        const delay = (i / particleCount) * totalDuration;
-        particlesRef.current.push(new Particle(delay));
+      const layerTypes = ['core', 'middle', 'outer'];
+      const layerDistribution = [0.35, 0.5, 0.15]; // More core particles
+      
+      for (let stream = 0; stream < streams; stream++) {
+        const streamDelay = (stream / streams) * 600; // Closer timing
+        
+        for (let i = 0; i < particlesPerStream; i++) {
+          const particleDelay = streamDelay + (i / particlesPerStream) * totalDuration;
+          
+          // Determine layer type based on distribution
+          const rand = Math.random();
+          let layerType;
+          if (rand < layerDistribution[0]) {
+            layerType = 'core';
+          } else if (rand < layerDistribution[0] + layerDistribution[1]) {
+            layerType = 'middle';
+          } else {
+            layerType = 'outer';
+          }
+          
+          particlesRef.current.push(new Particle(particleDelay, stream, layerType));
+        }
       }
+      
+      console.log(`Created ${particlesRef.current.length} particles across ${streams} streams`);
     }
 
     let lastTime = Date.now();
@@ -231,24 +319,21 @@ const GoldenParticleAbout = () => {
       lastTime = currentTime;
       timeRef.current = currentTime;
 
-      // Fade trail effect (stronger fade for crisper look)
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      // Subtle additive blending effect - slightly less fade for more visible trails
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.012)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Sort by depth for proper layering
+      // Sort by depth for proper layering (back to front)
       particlesRef.current.sort((a, b) => a.depth - b.depth);
       
-      // Update and draw particles
       particlesRef.current = particlesRef.current.filter(particle => {
         particle.update(deltaTime);
         return particle.draw(ctx, canvas, currentTime);
       });
 
-      // Stop animation when all particles are done
       if (particlesRef.current.length > 0) {
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
-        // Clear canvas completely when done
         ctx.fillStyle = 'rgba(0, 0, 0, 1)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
@@ -272,7 +357,6 @@ const GoldenParticleAbout = () => {
       />
 
       <div className="relative z-10">
-        {/* Title */}
         <div className="text-center mb-6 sm:mb-8 relative flex justify-center items-center">
           {"ABOUT".split("").map((letter, index) => (
             <span
@@ -291,7 +375,6 @@ const GoldenParticleAbout = () => {
         <div className="w-full max-w-3xl text-sm sm:text-base md:text-lg text-center px-2 sm:px-4">
           <div className="flex flex-col gap-3 sm:gap-4 md:gap-6">
 
-            {/* I am */}
             <div className="flex items-center justify-center">
               <span className="text-gray-400 text-xs sm:text-sm md:text-base whitespace-nowrap">
                 I am :
@@ -315,7 +398,6 @@ const GoldenParticleAbout = () => {
               </div>
             </div>
 
-            {/* I do */}
             <div className="flex items-center justify-center">
               <span className="text-gray-400 text-xs sm:text-sm md:text-base whitespace-nowrap">
                 I do :
@@ -339,7 +421,6 @@ const GoldenParticleAbout = () => {
               </div>
             </div>
 
-            {/* I use */}
             <div className="flex items-center justify-center">
               <span className="text-gray-400 text-xs sm:text-sm md:text-base whitespace-nowrap">
                 I use :
