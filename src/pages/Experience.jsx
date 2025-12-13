@@ -28,13 +28,13 @@ const Experience = () => {
           <h4>Sep 2025 - Present</h4>
           <p className='w-[50%]'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.  Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
            <div className="technologies flex items-center justify-evenly gap-10">
-            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-300 rounded-2xl '>JavaScript</button>
-            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-300 rounded-2xl '>React.js</button>
-            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-300 rounded-2xl '>CSS</button>
+            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-200 rounded-2xl '>JavaScript</button>
+            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-200 rounded-2xl '>React.js</button>
+            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-200 rounded-2xl '>CSS</button>
            </div>
            <div className='flex gap-10 mt-4'>
-            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-300 rounded-2xl'>HTML</button>
-            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-300 rounded-2xl'>GSAP </button>
+            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-200 rounded-2xl'>HTML</button>
+            <button className='h-[35px] w-[100px] font-bold bg-[#704995] text-gray-200 rounded-2xl'>GSAP </button>
            </div>
          </div>
         </div>
