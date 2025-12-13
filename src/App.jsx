@@ -2,6 +2,7 @@ import React, { useState, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { lazyWithPreload } from "./utils/lazywithPreload";
 import CustomFallback from "./components/UI/CustomFallBack";
+import SmoothScroll from "./components/SmoothScroll";
 
 const Loader = React.lazy(() => import("./components/UI/Loader"));
 const Layout = React.lazy(() => import("./Layout"));
@@ -20,22 +21,33 @@ export default function App() {
       ) : (
         <Router>
           <Suspense fallback={<CustomFallback />}>
-            <nav >
+
+            <nav>
               <Link
                 to="/gallery"
-                onMouseEnter={() => {
-                  Gallery.preload(); // Preload Gallery on hover
-                }}
-              >
-              </Link> 
+                onMouseEnter={() => Gallery.preload()}
+              ></Link>
             </nav>
 
             <Routes>
               <Route element={<Layout />}>
+
+                {/* ❌ No Locomotive on MainContent (fixes 200% zoom) */}
                 <Route path="/" element={<MainContent />} />
-                <Route path="/gallery" element={<Gallery />} />
+
+                {/* ✔ Locomotive only on Gallery page */}
+                <Route
+                  path="/gallery"
+                  element={
+                    <SmoothScroll>
+                      <Gallery />
+                    </SmoothScroll>
+                  }
+                />
+
               </Route>
             </Routes>
+
           </Suspense>
         </Router>
       )}

@@ -77,7 +77,7 @@ const Navbar = () => {
           {/* Logo and Name */}
           <div className="flex items-center space-x-3">
             <img src="./Gallery/myself.jpg" alt="Logo" className="h-12 w-12 mt-0.5 rounded-full" />
-            <Link to="/" className="font-[JazzFont] tracking-widest text-white text-3xl animate-float">
+            <Link to="/" className="font-[JazzFont] tracking-widest text-white text-3xl">
               AYESHA
             </Link>
           </div>

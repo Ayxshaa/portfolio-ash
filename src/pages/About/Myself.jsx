@@ -1,16 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
+import AboutMe from "../../assets/About_Me.webp";
 
 const Myself = () => {
   // Refs for the elements we want to animate
   const titleRef = useRef(null);
   const textRef = useRef(null);
+  const imageRef = useRef(null);
   
   // State to track visibility
   const [isTitleVisible, setIsTitleVisible] = useState(false);
   const [isTextVisible, setIsTextVisible] = useState(false);
+  const [isImageVisible, setIsImageVisible] = useState(false);
   
   useEffect(() => {
-    // Create observers for title and paragraph
+    // Create observers for title, text, and image
     const titleObserver = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
@@ -33,14 +36,27 @@ const Myself = () => {
       { threshold: 0.1 }
     );
     
+    const imageObserver = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          setIsImageVisible(true);
+          imageObserver.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    
     // Start observing
     if (titleRef.current) titleObserver.observe(titleRef.current);
     if (textRef.current) textObserver.observe(textRef.current);
+    if (imageRef.current) imageObserver.observe(imageRef.current);
     
     // Cleanup
     return () => {
       if (titleRef.current) titleObserver.unobserve(titleRef.current);
       if (textRef.current) textObserver.unobserve(textRef.current);
+      if (imageRef.current) imageObserver.unobserve(imageRef.current);
     };
   }, []);
   
@@ -61,54 +77,71 @@ const Myself = () => {
   ];
 
   return (
-    <div className="w-full max-w-md p-6 min-h-screen flex flex-col justify-center items-start">
-      <h2 
-        ref={titleRef}
-        className={`text-4xl font-bold tracking-wider font-[JazzFont] transition-opacity duration-1000 ${
-          isTitleVisible ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        A S H
-      </h2>
+    <div className="w-full flex justify-center items-center gap-10 px-6 py-10">
+      
+      {/* LEFT SIDE — Image */}
+      <div className="w-[40%] flex justify-center">
+        <img 
+          ref={imageRef}
+          src={AboutMe}
+          alt="About Me" 
+          className={`w-full h-auto max-h-[500px] object-contain rounded-xl transition-all duration-1000 ${
+            isImageVisible 
+              ? "opacity-100 translate-x-0" 
+              : "opacity-0 -translate-x-10"
+          }`}
+        />
+      </div>
 
-      <div 
-        ref={textRef}
-        className="mt-6 text-lg text-gray-300 leading-relaxed font-[JazzFont]"
-      >
-        {textContent.map((item, index) => {
-          // Calculate delay based on index
-          const delay = isTextVisible ? `${index * 0.1}s` : "0s";
-          
-          if (typeof item === "string") {
-            return (
-              <span
-                key={index}
-                className="inline-block transition-all duration-700"
-                style={{
-                  opacity: isTextVisible ? 1 : 0,
-                  transform: isTextVisible ? "translateY(0)" : "translateY(20px)",
-                  transitionDelay: delay
-                }}
-              >
-                {item}
-              </span>
-            );
-          } else {
-            return (
-              <span
-                key={index}
-                className={`inline-block transition-all duration-700 ${item.className}`}
-                style={{
-                  opacity: isTextVisible ? 1 : 0,
-                  transform: isTextVisible ? "translateY(0)" : "translateY(20px)",
-                  transitionDelay: delay
-                }}
-              >
-                {item.text}
-              </span>
-            );
-          }
-        })}
+      {/* RIGHT SIDE — Text Content */}
+      <div className="w-[50%] flex flex-col justify-center items-start max-w-lg">
+        <h2
+          ref={titleRef}
+          className={`text-4xl font-bold tracking-wider font-[JazzFont] transition-opacity duration-1000 ${
+            isTitleVisible ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          A S H
+        </h2>
+
+        <div
+          ref={textRef}
+          className="mt-6 text-lg text-gray-300 leading-relaxed font-[JazzFont]"
+        >
+          {textContent.map((item, index) => {
+            const delay = isTextVisible ? `${index * 0.1}s` : "0s";
+
+            if (typeof item === "string") {
+              return (
+                <span
+                  key={index}
+                  className="inline-block transition-all duration-700"
+                  style={{
+                    opacity: isTextVisible ? 1 : 0,
+                    transform: isTextVisible ? "translateY(0)" : "translateY(20px)",
+                    transitionDelay: delay,
+                  }}
+                >
+                  {item}
+                </span>
+              );
+            } else {
+              return (
+                <span
+                  key={index}
+                  className={`inline-block transition-all duration-700 ${item.className}`}
+                  style={{
+                    opacity: isTextVisible ? 1 : 0,
+                    transform: isTextVisible ? "translateY(0)" : "translateY(20px)",
+                    transitionDelay: delay,
+                  }}
+                >
+                  {item.text}
+                </span>
+              );
+            }
+          })}
+        </div>
       </div>
     </div>
   );

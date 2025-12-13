@@ -5,6 +5,7 @@ import { Element } from "react-scroll";
 const AboutMe = lazy(() => import("./pages/About/AboutMe"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Experience = lazy(() => import("./pages/Experience"));
 
 export default function MainContent() {
   return (
@@ -16,6 +17,12 @@ export default function MainContent() {
       <Element name="about" className="min-h-screen flex items-center justify-center bg-gray-900">
         <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading about section...</div>}>
           <AboutMe />
+        </Suspense>
+      </Element>
+
+      <Element name="experience" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-black">
+        <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading experience...</div>}>
+          <Experience />
         </Suspense>
       </Element>
 

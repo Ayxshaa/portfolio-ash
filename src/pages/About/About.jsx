@@ -139,9 +139,13 @@ const GoldenParticleAbout = () => {
         
         this.depth = Math.random();
         
-        // Wave properties based on layer - TIGHTER STREAMS
-        const baseAmplitude = layerType === 'core' ? 18 : (layerType === 'middle' ? 25 : 35);
-        this.waveAmplitude = baseAmplitude + Math.random() * 10;
+        // Wave properties based on layer - more spread out like moon particles
+        const baseAmplitude = layerType === 'core' ? 25 : (layerType === 'middle' ? 35 : 45);
+        this.waveAmplitude = baseAmplitude + Math.random() * 15;
+        
+        // More random spread (like moon particles around surface)
+        this.spreadAngle = Math.random() * Math.PI * 2; // Random angle for spread
+        this.spreadRadius = Math.random() * 30; // Random spread distance
         this.flowOffset = (streamIndex / 6) * Math.PI * 2;
       }
       
@@ -156,29 +160,52 @@ const GoldenParticleAbout = () => {
         
         const easedProgress = this.easeInOutQuart(progress);
         
+        const centerX = w * 0.5;
+        const centerY = h * 0.5;
+        
+        // Start from top-left, end at bottom-right
         const startX = w * 0.05;
         const startY = h * 0.05;
         const endX = w * 0.95;
         const endY = h * 0.95;
         
+        // Base diagonal path
         const baseX = startX + (endX - startX) * easedProgress;
         const baseY = startY + (endY - startY) * easedProgress;
         
-        const diagonalAngle = Math.atan2(endY - startY, endX - startX);
-        const perpAngle = diagonalAngle + Math.PI / 2;
+        // Calculate angle from center for rotation
+        const baseAngle = Math.atan2(baseY - centerY, baseX - centerX);
+        const baseDistance = Math.sqrt(
+          Math.pow(baseX - centerX, 2) + Math.pow(baseY - centerY, 2)
+        );
+        
+        // Rotate the wave pattern once around the center (full 360° rotation)
+        const rotationProgress = easedProgress; // Use eased progress for smooth rotation
+        const rotationAngle = baseAngle + (rotationProgress * Math.PI * 2); // One full rotation
+        
+        // Calculate rotated position
+        const rotatedX = centerX + Math.cos(rotationAngle) * baseDistance;
+        const rotatedY = centerY + Math.sin(rotationAngle) * baseDistance;
+        
+        // Wave perpendicular to the rotated path
+        const perpAngle = rotationAngle + Math.PI / 2;
         
         // Perfect sine wave with multiple cycles
-        const wavePhase = easedProgress * Math.PI * 9 + this.flowOffset;
-        const waveAmplitude = this.waveAmplitude * (1 - easedProgress * 0.15);
+        const wavePhase = easedProgress * Math.PI * 8 + this.flowOffset;
+        const waveAmplitude = this.waveAmplitude * (1 - easedProgress * 0.2);
         const waveOffset = Math.sin(wavePhase) * waveAmplitude;
         
-        let x = baseX + Math.cos(perpAngle) * waveOffset;
-        let y = baseY + Math.sin(perpAngle) * waveOffset;
+        let x = rotatedX + Math.cos(perpAngle) * waveOffset;
+        let y = rotatedY + Math.sin(perpAngle) * waveOffset;
         
-        // Organic variation
-        const microPhase = progress * Math.PI * 12 + this.shimmerPhase;
-        x += Math.sin(microPhase) * 2;
-        y += Math.cos(microPhase * 0.8) * 2;
+        // Add spread (like moon particles spread around surface)
+        x += Math.cos(this.spreadAngle) * this.spreadRadius * (1 - easedProgress * 0.5);
+        y += Math.sin(this.spreadAngle) * this.spreadRadius * (1 - easedProgress * 0.5);
+        
+        // Organic micro-variation
+        const microPhase = progress * Math.PI * 10 + this.shimmerPhase;
+        x += Math.sin(microPhase) * 3;
+        y += Math.cos(microPhase * 0.8) * 3;
         
         // Opacity with layer-specific brightness - INCREASED
         let baseOpacity;
@@ -227,7 +254,7 @@ const GoldenParticleAbout = () => {
       }
       
       draw(ctx, canvas, time) {
-        const pos = this.getPosition(canvas);
+        const pos = this.getPosition(canvas);``
         if (!pos) return false;
         
         const { x, y, opacity, size } = pos;
@@ -276,24 +303,23 @@ const GoldenParticleAbout = () => {
       }
     }
 
-    // Create dense layered particle streams - MORE STREAMS, DENSER
+    // Create dense particle cloud matching screenshot density
     if (!hasAnimatedRef.current) {
       hasAnimatedRef.current = true;
       
-      const streams = 6; // Reduced to 6 lines
-      const particlesPerStream = 650; // Increased density per stream
-      const totalDuration = 5500;
+      const streams = 12; // More streams for dense coverage
+      const particlesPerStream = 1200; // Much denser particles per stream
+      const totalDuration = 7000; // Longer for smooth rotation with more particles
       
-      const layerTypes = ['core', 'middle', 'outer'];
-      const layerDistribution = [0.35, 0.5, 0.15]; // More core particles
+      const layerDistribution = [0.4, 0.45, 0.15]; // More core and middle particles
       
       for (let stream = 0; stream < streams; stream++) {
-        const streamDelay = (stream / streams) * 600; // Closer timing
+        const streamDelay = (stream / streams) * 800; // Staggered start
         
         for (let i = 0; i < particlesPerStream; i++) {
           const particleDelay = streamDelay + (i / particlesPerStream) * totalDuration;
           
-          // Determine layer type based on distribution
+          // Determine layer type based on distribution (like moon particles)
           const rand = Math.random();
           let layerType;
           if (rand < layerDistribution[0]) {
@@ -308,7 +334,7 @@ const GoldenParticleAbout = () => {
         }
       }
       
-      console.log(`Created ${particlesRef.current.length} particles across ${streams} streams`);
+      console.log(`Created ${particlesRef.current.length} spread particles across ${streams} streams`);
     }
 
     let lastTime = Date.now();

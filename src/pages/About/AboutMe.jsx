@@ -4,15 +4,15 @@ import Myself from "./Myself";
 
 const AboutMe = () => {
   return (
-    <section className="w-full min-h-screen flex flex-col md:flex-row items-center justify-center bg-black text-white p-6">
-      {/* Left Side - About Section */}
-      <div className="w-full md:w-1/2 flex justify-center">
-        <About />
+    <section className="w-full min-h-screen flex flex-col items-center justify-center bg-black text-white p-6">
+      {/* First - Myself Section */}
+      <div className="w-full flex justify-center items-center">
+        <Myself />
       </div>
 
-      {/* Right Side - Myself Section */}
-      <div className="w-full md:w-1/2 flex justify-center">
-        <Myself />
+      {/* Second - About Section */}
+      <div className="w-full flex justify-center items-center">
+        <About />
       </div>
     </section>
   );

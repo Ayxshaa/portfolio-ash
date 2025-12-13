@@ -10,12 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@react-three/drei": "^10.3.0",
     "@react-three/fiber": "^9.1.2",
     "@react-three/postprocessing": "^3.0.4",
     "@tailwindcss/vite": "^4.0.13",
     "framer-motion": "^12.5.0",
     "gsap": "^3.12.7",
+    "locomotive-scroll": "^4.1.4",
     "lucide-react": "^0.522.0",
     "postprocessing": "^6.37.1",
     "react": "^19.0.0",
