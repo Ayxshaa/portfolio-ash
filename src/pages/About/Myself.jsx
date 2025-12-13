@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import AboutMe from "../../assets/About_Me.webp";
+import AboutMe from "../../assets/image.png";
 
 const Myself = () => {
   // Refs for the elements we want to animate
@@ -80,12 +80,12 @@ const Myself = () => {
     <div className="w-full flex justify-center items-center gap-10 px-6 py-10">
       
       {/* LEFT SIDE — Image */}
-      <div className="w-[40%] flex justify-center">
+      <div className="w-[30%] flex justify-center">
         <img 
           ref={imageRef}
           src={AboutMe}
           alt="About Me" 
-          className={`w-full h-auto max-h-[500px] object-contain rounded-xl transition-all duration-1000 ${
+          className={`w-full h-auto max-h-[400px] object-contain rounded-xl transition-all duration-1000 ${
             isImageVisible 
               ? "opacity-100 translate-x-0" 
               : "opacity-0 -translate-x-10"
@@ -97,7 +97,7 @@ const Myself = () => {
       <div className="w-[50%] flex flex-col justify-center items-start max-w-lg">
         <h2
           ref={titleRef}
-          className={`text-4xl font-bold tracking-wider font-[JazzFont] transition-opacity duration-1000 ${
+          className={`text-4xl text-[#704995] font-bold tracking-wider font-[JazzFont] transition-opacity duration-1000 ${
             isTitleVisible ? "opacity-100" : "opacity-0"
           }`}
         >

@@ -60,7 +60,7 @@ const GoldenParticleAbout = () => {
         }
       },
       {
-        threshold: 0.3,
+        threshold: 0.05, // Trigger as soon as 5% of the section is visible
       }
     );
 
@@ -92,7 +92,7 @@ const GoldenParticleAbout = () => {
       constructor(delay = 0, streamIndex = 0, layerType = 'middle') {
         this.delay = delay;
         this.age = -delay;
-        this.lifetime = 6000;
+        this.lifetime = 5500; // Slightly reduced lifetime for faster animation
         this.streamIndex = streamIndex;
         this.layerType = layerType;
         
@@ -110,27 +110,26 @@ const GoldenParticleAbout = () => {
         }
         this.size = this.baseSize;
         
-        // Color based on layer (warmer core, cooler outer)
-        let warmth, redShift;
+        // Color based on layer - Purple/Blue theme matching portfolio
+        let colorRandom = Math.random();
         switch (layerType) {
           case 'core':
-            warmth = 0.9 + Math.random() * 0.1;
-            redShift = 0.1 + Math.random() * 0.3;
-            this.r = warmth;
-            this.g = warmth * (0.7 + Math.random() * 0.2);
-            this.b = warmth * 0.5;
+            // Bright purple/blue core
+            this.r = 0.9 + Math.random() * 0.1;
+            this.g = 0.6 + Math.random() * 0.3;
+            this.b = 1.0 + Math.random() * 0.0;
             break;
           case 'middle':
-            warmth = 0.75 + Math.random() * 0.25;
-            this.r = warmth;
-            this.g = warmth * (0.8 + Math.random() * 0.2);
-            this.b = warmth * (0.5 + Math.random() * 0.3);
+            // Medium purple
+            this.r = 0.75 + Math.random() * 0.2;
+            this.g = 0.4 + Math.random() * 0.3;
+            this.b = 0.95 + Math.random() * 0.05;
             break;
           case 'outer':
-            warmth = 0.7 + Math.random() * 0.3;
-            this.r = warmth;
-            this.g = warmth * (0.9 + Math.random() * 0.1);
-            this.b = warmth * (0.7 + Math.random() * 0.2);
+            // Lighter purple/cyan
+            this.r = 0.6 + Math.random() * 0.3;
+            this.g = 0.5 + Math.random() * 0.3;
+            this.b = 1.0 + Math.random() * 0.0;
             break;
         }
         
@@ -190,22 +189,25 @@ const GoldenParticleAbout = () => {
         // Wave perpendicular to the rotated path
         const perpAngle = rotationAngle + Math.PI / 2;
         
-        // Perfect sine wave with multiple cycles
-        const wavePhase = easedProgress * Math.PI * 8 + this.flowOffset;
-        const waveAmplitude = this.waveAmplitude * (1 - easedProgress * 0.2);
-        const waveOffset = Math.sin(wavePhase) * waveAmplitude;
+        // Enhanced sine wave with multiple cycles for better wave effect
+        const wavePhase = easedProgress * Math.PI * 10 + this.flowOffset;
+        const waveAmplitude = this.waveAmplitude * (1 - easedProgress * 0.15);
+        // Combine sine and cosine for more organic wave motion
+        const waveOffset = (Math.sin(wavePhase) * 0.6 + Math.cos(wavePhase * 0.5) * 0.4) * waveAmplitude;
         
         let x = rotatedX + Math.cos(perpAngle) * waveOffset;
         let y = rotatedY + Math.sin(perpAngle) * waveOffset;
         
-        // Add spread (like moon particles spread around surface)
-        x += Math.cos(this.spreadAngle) * this.spreadRadius * (1 - easedProgress * 0.5);
-        y += Math.sin(this.spreadAngle) * this.spreadRadius * (1 - easedProgress * 0.5);
+        // Enhanced spread with wave-like quality (like moon particles spread around surface)
+        const spreadWavePhase = progress * Math.PI * 6 + this.spreadAngle;
+        const spreadWaveModulation = 0.5 + Math.sin(spreadWavePhase) * 0.5;
+        x += Math.cos(this.spreadAngle) * this.spreadRadius * (1 - easedProgress * 0.4) * spreadWaveModulation;
+        y += Math.sin(this.spreadAngle) * this.spreadRadius * (1 - easedProgress * 0.4) * spreadWaveModulation;
         
-        // Organic micro-variation
-        const microPhase = progress * Math.PI * 10 + this.shimmerPhase;
-        x += Math.sin(microPhase) * 3;
-        y += Math.cos(microPhase * 0.8) * 3;
+        // Enhanced organic micro-variation with smoother transitions
+        const microPhase = progress * Math.PI * 12 + this.shimmerPhase;
+        x += Math.sin(microPhase) * 4 * (1 - easedProgress * 0.3);
+        y += Math.cos(microPhase * 0.8) * 4 * (1 - easedProgress * 0.3);
         
         // Opacity with layer-specific brightness - INCREASED
         let baseOpacity;
@@ -265,16 +267,16 @@ const GoldenParticleAbout = () => {
         const shimmerG = Math.min(1.0, this.g * shimmer);
         const shimmerB = Math.min(1.0, this.b * shimmer);
         
-        // Depth-based glow (matching moon particle shader)
-        const depthFactor = 0.4 + this.depth * 0.6;
+        // Enhanced depth-based glow for better visibility
+        const depthFactor = 0.5 + this.depth * 0.5;
         
-        // Outer glow (soft halo)
-        const glowRadius = size * 4.5;
+        // Outer glow (enhanced soft halo)
+        const glowRadius = size * 5.5;
         const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
         
-        glowGradient.addColorStop(0, `rgba(${Math.floor(shimmerR * 255)}, ${Math.floor(shimmerG * 255)}, ${Math.floor(shimmerB * 255)}, ${opacity * depthFactor * 0.8})`);
-        glowGradient.addColorStop(0.3, `rgba(${Math.floor(shimmerR * 255 * 0.9)}, ${Math.floor(shimmerG * 255 * 0.9)}, ${Math.floor(shimmerB * 255 * 0.9)}, ${opacity * depthFactor * 0.4})`);
-        glowGradient.addColorStop(0.6, `rgba(${Math.floor(shimmerR * 255 * 0.7)}, ${Math.floor(shimmerG * 255 * 0.7)}, ${Math.floor(shimmerB * 255 * 0.7)}, ${opacity * depthFactor * 0.2})`);
+        glowGradient.addColorStop(0, `rgba(${Math.floor(shimmerR * 255)}, ${Math.floor(shimmerG * 255)}, ${Math.floor(shimmerB * 255)}, ${opacity * depthFactor * 1.0})`);
+        glowGradient.addColorStop(0.25, `rgba(${Math.floor(shimmerR * 255 * 0.95)}, ${Math.floor(shimmerG * 255 * 0.95)}, ${Math.floor(shimmerB * 255 * 0.95)}, ${opacity * depthFactor * 0.6})`);
+        glowGradient.addColorStop(0.5, `rgba(${Math.floor(shimmerR * 255 * 0.8)}, ${Math.floor(shimmerG * 255 * 0.8)}, ${Math.floor(shimmerB * 255 * 0.8)}, ${opacity * depthFactor * 0.3})`);
         glowGradient.addColorStop(1, `rgba(${Math.floor(shimmerR * 255)}, ${Math.floor(shimmerG * 255)}, ${Math.floor(shimmerB * 255)}, 0)`);
         
         ctx.fillStyle = glowGradient;
@@ -314,7 +316,7 @@ const GoldenParticleAbout = () => {
       const layerDistribution = [0.4, 0.45, 0.15]; // More core and middle particles
       
       for (let stream = 0; stream < streams; stream++) {
-        const streamDelay = (stream / streams) * 800; // Staggered start
+        const streamDelay = (stream / streams) * 150; // Much faster staggered start (reduced from 800ms)
         
         for (let i = 0; i < particlesPerStream; i++) {
           const particleDelay = streamDelay + (i / particlesPerStream) * totalDuration;
@@ -380,6 +382,16 @@ const GoldenParticleAbout = () => {
       <canvas
         ref={canvasRef}
         className="absolute inset-0"
+      />
+      
+      {/* Radial Gradient Overlay - Right Side */}
+      <div 
+        className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${
+          isInView ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          background: `radial-gradient(ellipse 800px 600px at 80% 50%, rgba(139, 92, 246, 0.25) 0%, rgba(88, 28, 135, 0.15) 30%, transparent 70%)`
+        }}
       />
 
       <div className="relative z-10">
