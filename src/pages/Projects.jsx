@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import { ArrowRight, Github } from "lucide-react";
 
 const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
@@ -13,6 +14,7 @@ const Projects = () => {
       image: "./Gallery/ProjectMoon.png",
       technologies: ["React", "Tailwind CSS", "JavaScript"],
       link: "https://ayeshashhh.netlify.app/",
+      github: "ayeshashhh",
     },
     {
       id: 2,
@@ -21,6 +23,7 @@ const Projects = () => {
       image: "./Gallery/ChatApp2.png",
       technologies: ["React", "tawilwind", "MongoDB", "JAVA", "AI integration"],
       link: "https://a4zone.onrender.com/",
+      github: "ayeshashhh",
     },
     {
       id: 3,
@@ -29,6 +32,7 @@ const Projects = () => {
       image: "./Gallery/EventManagement2.png",
       technologies: ["React", "MongoDB", "Express", "Node.js"],
       link: "https://flowevent.netlify.app/",
+      github: "ayeshashhh",
     },
   ];
 
@@ -112,170 +116,175 @@ const Projects = () => {
 };
 
 const ProjectCard = ({ project, index, isActive, setActiveProject }) => {
-  const controls = useAnimation();
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
-  // More dramatic entry animation per card
+  // Scroll-based reveal animation
   useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          // Animate in
+          setIsVisible(true);
+          setHasAnimated(true);
+          element.style.transform = 'translate(0, 0)';
+          element.style.opacity = '1';
+          element.style.visibility = 'visible';
+        } else if (!entry.isIntersecting && entry.boundingClientRect.top > 0 && hasAnimated) {
+          // Scrolled past - hide element (onLeave)
+          setIsVisible(false);
+          element.style.opacity = '0';
+          element.style.visibility = 'hidden';
+        }
+      },
+      { 
+        threshold: 0.2,
+        rootMargin: '0px'
+      }
+    );
+
+    // Set initial state based on index (left, center, right)
+    const direction = index % 3; // 0 = left, 1 = center, 2 = right
+    let xOffset = 0;
+    let yOffset = 100;
+    
+    if (direction === 0) {
+      xOffset = -100;
+      yOffset = 0;
+    } else if (direction === 2) {
+      xOffset = 100;
+      yOffset = 0;
+    }
+    
+    element.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+    element.style.opacity = '0';
+    element.style.visibility = 'hidden';
+    element.style.transition = 'transform 1.25s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.25s cubic-bezier(0.19, 1, 0.22, 1), visibility 0s linear 0s';
+
+    observer.observe(element);
+    
+    return () => observer.disconnect();
+  }, [index, hasAnimated]);
+
+  // Watch for re-entry after initial animation
+  useEffect(() => {
+    if (!hasAnimated) return;
+
+    const element = ref.current;
+    if (!element) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          // Re-entering viewport
           setIsVisible(true);
-          controls.start("visible");
+          element.style.visibility = 'visible';
+          element.style.transform = 'translate(0, 0)';
+          element.style.opacity = '1';
+        } else if (!entry.isIntersecting && entry.boundingClientRect.top > 0) {
+          // Scrolled past (onLeave)
+          setIsVisible(false);
+          element.style.opacity = '0';
+          element.style.visibility = 'hidden';
         }
       },
-      { threshold: 0.4 }
+      { 
+        threshold: 0.2,
+        rootMargin: '0px'
+      }
     );
 
-    if (ref.current) observer.observe(ref.current);
+    observer.observe(element);
     return () => observer.disconnect();
-  }, [controls, index]);
-
-  // Card animation variants
-  const cardVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 100, 
-      scale: 0.9, 
-      rotateX: -15,
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1, 
-      rotateX: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.25, 0.1, 0.25, 1.0],
-        delayChildren: 0.3,
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  // Content animation variants
-  const contentVariants = {
-    hidden: { opacity: 0, x: -30 },
-    visible: { 
-      opacity: 1, 
-      x: 0,
-      transition: { duration: 0.5 }
-    }
-  };
-
-  // Tech tags animation
-  const tagVariants = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: (i) => ({
-      scale: 1,
-      opacity: 1,
-      transition: {
-        delay: i * 0.1,
-        duration: 0.4,
-        type: "spring",
-        stiffness: 200
-      }
-    })
-  };
+  }, [hasAnimated]);
 
   return (
-    <motion.div
+    <div
       ref={ref}
       className="w-full h-full"
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
-      variants={cardVariants}
-      viewport={{ once: true, amount: 0.2 }}
     >
-      <motion.div
-        whileHover={{
-          scale: 1.03,
-          y: -10,
-          boxShadow: "0px 20px 50px rgba(168,85,247,0.4)", 
-        }}
-        className={`h-full bg-gradient-to-br from-purple-900/20 via-gray-900/40 to-black/60 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border transition-all duration-500 border-purple-900/30`}
+      <div
+        className="h-full bg-gradient-to-br from-purple-900/20 via-gray-900/40
+         to-black/60 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border 
+         transition-all duration-500 border-purple-900/30 
+         hover:scale-105 hover:-translate-y-2 
+         hover:shadow-[0px_20px_50px_rgba(112,73,149,0.4)]"
       >
         <div className="flex flex-col h-full">
-          <motion.div
+          <div
             className="w-full h-56 relative overflow-hidden"
-            variants={contentVariants}
           >
-            <motion.img
+            <img
               src={project.image}
               alt={project.title}
               className="w-[calc(100%-1rem)] h-full rounded-xl mt-2 ml-2 object-center bg-gray-900/50"
-              initial={{ filter: "blur(5px)", scale: 1.1 }}
-              animate={{ filter: "blur(0px)", scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
               onError={(e) => {
                 e.target.src =
                   "https://via.placeholder.com/600x400?text=Project+Image";
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
-          </motion.div>
+          </div>
           
           <div className="w-full p-6 flex flex-col justify-between flex-grow">
             <div>
-              <motion.h3
-                variants={contentVariants}
+              <h3
                 className="text-2xl font-[JazzFont] tracking-wider text-purple-200 mb-3"
               >
                 {project.title}
-              </motion.h3>
-              <motion.p 
-                variants={contentVariants}
+              </h3>
+              <p 
                 className="text-gray-300 text-sm mb-4 leading-relaxed"
               >
                 {project.description}
-              </motion.p>
-              <motion.div 
-                variants={contentVariants}
+              </p>
+              <div 
                 className="mb-5"
               >
-                <h4 className="text-xs font-bold text-purple-400 mb-2 tracking-wider">
+                <h4 className="text-xs font-bold text-purple-500 mb-2 tracking-wider">
                   TECHNOLOGIES
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.map((tech, i) => (
-                    <motion.span
+                    <span
                       key={i}
-                      custom={i}
-                      variants={tagVariants}
-                      className="px-3 py-1 bg-purple-600/30 border border-purple-500/50 rounded-full text-xs text-purple-200 font-medium"
-                      whileHover={{
-                        scale: 1.15,
-                        backgroundColor: "rgba(168,85,247,0.6)",
-                        borderColor: "rgba(168,85,247,0.8)",
-                        color: "#fff",
-                      }}
-                      transition={{ duration: 0.2 }}
+                      className="px-3 py-1 bg-[#704995] border border-purple-500/50 rounded-full text-xs text-gray-200 font-medium hover:scale-110 hover:bg-purple-600/60 hover:border-purple-500/80 hover:text-white transition-all duration-200"
                     >
                       {tech}
-                    </motion.span>
+                    </span>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             </div>
             
-            <motion.a
-              variants={contentVariants}
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-center px-6 py-2.5 border-2 border-purple-500/60 bg-purple-600/10 text-purple-300 hover:bg-[#704995] hover:border-purple-500 hover:text-white transition-all duration-300 rounded-lg font-[JazzFont] tracking-wider text-sm"
-              whileHover={{ 
-                scale: 1.05,
-                transition: { type: "spring", stiffness: 400 }
-              }}
-            >
-              VIEW PROJECT
-            </motion.a>
+            <div className="flex gap-3 items-center">
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center p-2.5 border-2 border-purple-500/60 bg-purple-600/10 text-purple-300 hover:bg-[#704995] hover:border-purple-500 hover:text-white transition-all duration-300 rounded-lg hover:scale-110"
+                title="View Project"
+              >
+                <ArrowRight size={20} />
+              </a>
+              <a
+                href={`https://github.com/${project.github}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center p-2.5 border-2 border-purple-500/60 bg-purple-600/10 text-purple-300 hover:bg-[#704995] hover:border-purple-500 hover:text-white transition-all duration-300 rounded-lg hover:scale-110"
+                title="GitHub Repository"
+              >
+                <Github size={20} />
+              </a>
+            </div>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 
