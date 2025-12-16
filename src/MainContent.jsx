@@ -4,6 +4,8 @@ import { Element } from "react-scroll";
 // Replace direct imports with lazy loading
 const AboutMe = lazy(() => import("./pages/About/AboutMe"));
 const Projects = lazy(() => import("./pages/Projects"));
+const Call = lazy(() => import("./components/UI/Call"));
+const Connect = lazy(() => import("./pages/Connect"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Experience = lazy(() => import("./pages/Experience"));
 
@@ -32,6 +34,11 @@ export default function MainContent() {
         </Suspense>
       </Element>
 
+      <Element name="call" className="min-h-screen flex items-center justify-center bg-black">
+        <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading call section...</div>}>
+          <Call />
+        </Suspense>
+      </Element>
       <Element name="contact" className="min-h-screen flex items-center justify-center bg-black">
         <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading contact info...</div>}>
           <Contact />
