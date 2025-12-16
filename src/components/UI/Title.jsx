@@ -14,7 +14,7 @@ const Title = () => {
         {titleText.split(" ").map((word, wordIndex) => (
           <span
             key={wordIndex}
-            className={`${word.toLowerCase() === "moon" ? "text-purple-500" : ""} inline-block mx-1 md:mx-2`}
+            className={`${word.toLowerCase() === "moon" ? "text-[#704995]" : ""} inline-block mx-1 md:mx-2`}
           >
             {word}
             {wordIndex < titleText.split(" ").length - 1 ? " " : ""}
