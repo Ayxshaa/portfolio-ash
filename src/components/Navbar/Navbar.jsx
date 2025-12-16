@@ -92,7 +92,7 @@ const Navbar = () => {
                     onClick={() => scrollToSection(item.id)}
                     className={`text-sm font-[JazzFont] tracking-wider transition-colors duration-300 ${
                       activeSection === item.id
-                        ? "text-white border-b border-purple-500 pb-1"
+                        ? "text-white border-b border-[#704995] pb-1"
                         : "text-gray-300 hover:text-white"
                     }`}
                   >
