@@ -29,7 +29,7 @@ const Loader = ({ onComplete }) => {
   const visibleLetters = Math.floor((percent / 100) * name.length);
 
   return (
-    <div className="min-h-screen w-screen bg-black flex flex-col justify-center items-center text-purple-500 font-semibold tracking-widest px-4 font-[JazzFont]">
+    <div className="min-h-screen w-screen bg-black flex flex-col justify-center items-center text-[#704995] font-semibold tracking-widest px-4 font-[JazzFont]">
       <AnimatePresence>
         {!showFullName ? (
           <motion.div

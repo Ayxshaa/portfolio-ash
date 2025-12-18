@@ -99,7 +99,7 @@ const Projects = () => {
 
       {/* Projects List */}
       <div className="relative w-full px-4 sm:px-6 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {projects.map((project, index) => (
             <ProjectCard 
               key={project.id} 
@@ -147,15 +147,15 @@ const ProjectCard = ({ project, index, isActive, setActiveProject }) => {
       }
     );
 
-    // Set initial state based on index (left, center, right)
-    const direction = index % 3; // 0 = left, 1 = center, 2 = right
+    // Set initial state based on index (left, right alternating)
+    const direction = index % 2; // 0 = left, 1 = right
     let xOffset = 0;
     let yOffset = 100;
     
     if (direction === 0) {
       xOffset = -100;
       yOffset = 0;
-    } else if (direction === 2) {
+    } else if (direction === 1) {
       xOffset = 100;
       yOffset = 0;
     }
