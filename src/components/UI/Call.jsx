@@ -184,7 +184,7 @@ const Call = () => {
           ))}
         </ul>
         <a 
-          href="https://cal.com/ayeshaqureshi/30min" 
+          href="https://cal.com/ayesha-qureshi/30min?overlayCalendar=true" 
           target="_blank" 
           rel="noopener noreferrer"
           className="button"
