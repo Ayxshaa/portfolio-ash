@@ -76,33 +76,42 @@ export default function generateParticlesFromMesh(mesh, density = 15) {
         };
     };
 
-    // Enhanced particle color with blue-to-white gradient based on distance
+    // Enhanced particle color with purple theme gradient based on distance
+    // Theme color: #704995 (Purple)
     const getParticleColor = (layerType, distFactor) => {
         const color = new THREE.Color();
         
+        // Base theme color in RGB: #704995 = rgb(112, 73, 149)
+        const themeR = 112 / 255;  // 0.439
+        const themeG = 73 / 255;   // 0.286
+        const themeB = 149 / 255;  // 0.584
+        
         switch (layerType) {
             case 'core':
-                // Core particles: warmer (reddish-orange to yellow-white)
-                const warmth = Math.min(0.9 + Math.random() * 0.1, 1.0);
-                const redShift = Math.min(0.1 + Math.random() * 0.3, 1.0);
-                color.setRGB(warmth, warmth * (0.7 + Math.random() * 0.2), warmth * 0.5);
+                // Core particles: bright purple with white highlights
+                const coreBrightness = Math.min(0.9 + Math.random() * 0.1, 1.0);
+                color.setRGB(
+                    coreBrightness * themeR + 0.3,
+                    coreBrightness * themeG + 0.2,
+                    coreBrightness * themeB + 0.4
+                );
                 break;
             case 'middle':
-                // Middle particles: transition (orange-yellow to light yellow)
+                // Middle particles: medium purple transitioning to lighter purple
                 const midBrightness = 0.75 + Math.random() * 0.25;
                 color.setRGB(
-                    midBrightness,
-                    midBrightness * (0.8 + Math.random() * 0.2),
-                    midBrightness * (0.5 + Math.random() * 0.3)
+                    midBrightness * themeR + 0.2,
+                    midBrightness * themeG + 0.15,
+                    midBrightness * themeB + 0.3
                 );
                 break;
             case 'outer':
-                // Outer particles: cooler (yellow-white)
+                // Outer particles: lighter purple-white
                 const outerBrightness = 0.7 + Math.random() * 0.3;
                 color.setRGB(
-                    outerBrightness,
-                    outerBrightness * (0.9 + Math.random() * 0.1),
-                    outerBrightness * (0.7 + Math.random() * 0.2)
+                    outerBrightness * themeR + 0.4,
+                    outerBrightness * themeG + 0.3,
+                    outerBrightness * themeB + 0.5
                 );
                 break;
         }
