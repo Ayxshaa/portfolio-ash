@@ -12,7 +12,7 @@ const TechStack = () => {
     { id: 3, name: 'MongoDB', icon: '/icons/mongodb.svg', color: '#13AA52' },
     { id: 4, name: 'Three.js', icon: '/icons/threejs.svg', color: '#000000' },
     { id: 5, name: 'Tailwind', icon: '/icons/tailwindcss.svg', color: '#06B6D4' },
-    { id: 6, name: 'Framer', icon: '/icons/framermotion.svg', color: '#0055FF' },
+    { id: 6, name: 'Framer', icon: '/icons/framer-motion.svg', color: '#0055FF' },
     { id: 7, name: 'JavaScript', icon: '/icons/javascript.svg', color: '#F7DF1E' },
     { id: 8, name: 'TypeScript', icon: '/icons/typescript.svg', color: '#3178C6' },
   ];
@@ -145,6 +145,7 @@ const TechStack = () => {
                     className="w-14 h-14 object-contain"
                     style={{
                       filter: isItemActive ? 'grayscale(0%) brightness(1.2)' : 'grayscale(100%) brightness(0.6)',
+                      transform: (tech.name === 'Framer' || tech.name === 'Three.js') ? 'rotate(90deg)' : (tech.name === 'Vite' || tech.name === 'TypeScript' || tech.name === 'JavaScript') ? 'rotate(180deg)' : 'rotate(0deg)',
                     }}
                     animate={{
                       filter: isItemActive

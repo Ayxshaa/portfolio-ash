@@ -3,6 +3,9 @@ import { Element } from "react-scroll";
 
 // Replace direct imports with lazy loading
 const AboutMe = lazy(() => import("./pages/About/AboutMe"));
+const Myself = lazy(() => import("./pages/About/Myself"));
+const About = lazy(() => import("./pages/About/About"));
+const TechStack = lazy(() => import("./pages/TechStack"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Call = lazy(() => import("./components/UI/Call"));
 const Connect = lazy(() => import("./pages/Connect"));
@@ -16,10 +19,25 @@ export default function MainContent() {
         {/* The Canvas is now in Layout, don't include it here */}
       </Element>
 
-      <Element name="about" className="min-h-screen flex items-center justify-center bg-gray-900">
-        <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading about section...</div>}>
-          <AboutMe />
+      <Element name="myself" className="min-h-screen bg-black flex items-center justify-center">
+        <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading myself section...</div>}>
+          <Myself />
         </Suspense>
+      </Element>
+
+      <Element name="about" className="min-h-screen bg-black">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-screen">
+          <div className="flex items-center justify-center">
+            <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading about section...</div>}>
+              <About />
+            </Suspense>
+          </div>
+          <div className="flex items-center justify-center">
+            <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading tech stack...</div>}>
+              <TechStack />
+            </Suspense>
+          </div>
+        </div>
       </Element>
 
       <Element name="experience" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-black">
