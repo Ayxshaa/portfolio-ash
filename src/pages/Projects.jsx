@@ -34,6 +34,15 @@ const Projects = () => {
       link: "https://flowevent.netlify.app/",
       github: "ayeshashhh",
     },
+    {
+      id: 4,
+      title:"3d Gallery",
+      description: "A 3D gallery showcasing various artworks using Three.js.",
+      image: "./Gallery/3d-Image.png",
+      technologies: ["Three.js", "React", "CSS"],
+      link: "https://ayxshaa.github.io/VideoGallery/",
+      github: "ayeshashhh",
+    }
   ];
 
   // Scroll to projects section when navigating from navbar
