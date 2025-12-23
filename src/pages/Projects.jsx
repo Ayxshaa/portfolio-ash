@@ -88,27 +88,20 @@ const Projects = () => {
       className="relative w-full min-h-screen bg-black bg-[radial-gradient(circle_at_bottom,rgba(88,28,135,0.35),transparent_70%)]"
     >
       <motion.div 
-        className="text-center py-16"
+        className="text-center py-12 md:py-16 px-4"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
         variants={headerVariants}
       >
-        <h2 className="text-4xl font-[JazzFont] tracking-widest text-white">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-[JazzFont] tracking-widest text-white">
           PROJECTS
         </h2>
-        <motion.div 
-          className="w-24 h-1 bg-purple-500 mx-auto mt-4"
-          initial={{ width: 0 }}
-          whileInView={{ width: 96 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          viewport={{ once: true }}
-        ></motion.div>
       </motion.div>
 
       {/* Projects List */}
-      <div className="relative w-full px-4 sm:px-6 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+      <div className="relative w-full px-4 sm:px-6 pb-12 md:pb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-5xl mx-auto">
           {projects.map((project, index) => (
             <ProjectCard 
               key={project.id} 
@@ -224,13 +217,13 @@ const ProjectCard = ({ project, index, isActive, setActiveProject }) => {
          hover:shadow-[0px_20px_50px_rgba(112,73,149,0.4)]"
       >
         <div className="flex flex-col h-full">
-          <div
-            className="w-full h-56 relative overflow-hidden"
-          >
-            <img
-              src={project.image}
-              alt={project.title}
-              className="w-[calc(100%-1rem)] h-full rounded-xl mt-2 ml-2 object-center bg-gray-900/50"
+            <div
+              className="w-full h-40 sm:h-48 md:h-56 relative overflow-hidden"
+            >
+              <img
+                src={project.image}
+                alt={project.title}
+                className="w-[calc(100%-0.5rem)] sm:w-[calc(100%-1rem)] h-full rounded-md sm:rounded-xl mt-1 sm:mt-2 ml-1 sm:ml-2 object-center bg-gray-900/50"
               onError={(e) => {
                 e.target.src =
                   "https://via.placeholder.com/600x400?text=Project+Image";
@@ -239,15 +232,15 @@ const ProjectCard = ({ project, index, isActive, setActiveProject }) => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
           </div>
           
-          <div className="w-full p-6 flex flex-col justify-between flex-grow">
-            <div>
-              <h3
-                className="text-2xl font-[JazzFont] tracking-wider text-purple-200 mb-3"
-              >
-                {project.title}
-              </h3>
-              <p 
-                className="text-gray-300 text-sm mb-4 leading-relaxed"
+            <div className="w-full p-4 sm:p-6 flex flex-col justify-between flex-grow">
+              <div>
+                <h3
+                  className="text-lg sm:text-xl md:text-2xl font-[JazzFont] tracking-wider text-purple-200 mb-2 sm:mb-3"
+                >
+                  {project.title}
+                </h3>
+                <p 
+                  className="text-gray-300 text-xs sm:text-sm md:text-base mb-3 sm:mb-4 leading-relaxed"
               >
                 {project.description}
               </p>
@@ -270,26 +263,26 @@ const ProjectCard = ({ project, index, isActive, setActiveProject }) => {
               </div>
             </div>
             
-            <div className="flex gap-3 items-center">
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center p-2.5 border-2 border-purple-500/60 bg-purple-600/10 text-purple-300 hover:bg-[#704995] hover:border-purple-500 hover:text-white transition-all duration-300 rounded-lg hover:scale-110"
-                title="View Project"
-              >
-                <ArrowRight size={20} />
-              </a>
-              <a
-                href={`https://github.com/${project.github}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center p-2.5 border-2 border-purple-500/60 bg-purple-600/10 text-purple-300 hover:bg-[#704995] hover:border-purple-500 hover:text-white transition-all duration-300 rounded-lg hover:scale-110"
-                title="GitHub Repository"
-              >
-                <Github size={20} />
-              </a>
-            </div>
+              <div className="flex gap-2 sm:gap-3 items-center">
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center p-2 sm:p-2.5 border-2 border-purple-500/60 bg-purple-600/10 text-purple-300 hover:bg-[#704995] hover:border-purple-500 hover:text-white transition-all duration-300 rounded-lg hover:scale-110"
+                  title="View Project"
+                >
+                  <ArrowRight size={18} />
+                </a>
+                <a
+                  href={`https://github.com/${project.github}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center p-2 sm:p-2.5 border-2 border-purple-500/60 bg-purple-600/10 text-purple-300 hover:bg-[#704995] hover:border-purple-500 hover:text-white transition-all duration-300 rounded-lg hover:scale-110"
+                  title="GitHub Repository"
+                >
+                  <Github size={18} />
+                </a>
+              </div>
           </div>
         </div>
       </div>
