@@ -14,7 +14,7 @@ const Projects = () => {
       image: "./Gallery/ProjectMoon.png",
       technologies: ["React", "Tailwind CSS", "JavaScript"],
       link: "https://ayeshashhh.netlify.app/",
-      github: "ayeshashhh",
+      github: "https://github.com/Ayxshaa/portfolio-ash",
     },
     {
       id: 2,
@@ -23,7 +23,7 @@ const Projects = () => {
       image: "./Gallery/ChatApp2.png",
       technologies: ["React", "tawilwind", "MongoDB", "JAVA", "AI integration"],
       link: "https://a4zone.onrender.com/",
-      github: "ayeshashhh",
+      github: "https://github.com/Ayxshaa/chat-app",
     },
     {
       id: 3,
@@ -32,7 +32,7 @@ const Projects = () => {
       image: "./Gallery/EventManagement2.png",
       technologies: ["React", "MongoDB", "Express", "Node.js"],
       link: "https://flowevent.netlify.app/",
-      github: "ayeshashhh",
+      github: "https://github.com/Ayxshaa/EDC-LandingPage",
     },
     {
       id: 4,
@@ -41,7 +41,7 @@ const Projects = () => {
       image: "./Gallery/3d-Image.png",
       technologies: ["Three.js", "React", "CSS"],
       link: "https://ayxshaa.github.io/VideoGallery/",
-      github: "ayeshashhh",
+      github: "https://github.com/Ayxshaa/VideoGallery",
     }
   ];
 
