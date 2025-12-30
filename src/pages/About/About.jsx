@@ -384,13 +384,13 @@ const GoldenParticleAbout = () => {
         className="absolute inset-0"
       />
       
-      {/* Radial Gradient Overlay - Right Side */}
+      {/* Radial Gradient Overlay - Center */}
       <div 
         className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${
           isInView ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
-          background: `radial-gradient(ellipse 800px 600px at 80% 50%, rgba(139, 92, 246, 0.25) 0%, rgba(88, 28, 135, 0.15) 30%, transparent 70%)`
+          background: `radial-gradient(ellipse 800px 600px at 50% 50%, rgba(139, 92, 246, 0.25) 0%, rgba(88, 28, 135, 0.15) 30%, transparent 70%)`
         }}
       />
 

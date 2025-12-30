@@ -38,7 +38,7 @@ export default function MainContent() {
         </div>
       </Element>
 
-      <Element name="experience" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-black">
+      <Element name="experience" className="min-h-screen flex items-center justify-center bg-black">
         <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading experience...</div>}>
           <Experience />
         </Suspense>

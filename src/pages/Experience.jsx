@@ -117,7 +117,7 @@ const Experience = () => {
   return (
     <div 
       ref={containerRef}
-      className='experience font-[JazzFont] bg-[radial-gradient(circle_at_bottom,rgba(88,28,135,0.35),transparent_70%)] min-h-screen py-20 flex flex-col justify-center items-center'
+      className='experience font-[JazzFont] bg-black min-h-screen py-20 flex flex-col justify-center items-center'
     >
       {/* Heading - centered and aligned properly */}
       <div className='w-full flex justify-center items-center mb-12'>
@@ -162,8 +162,6 @@ const Experience = () => {
               src="./Bg.png" 
               alt="Experience illustration" 
             />
-            {/* Gradient overlay for depth */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 pointer-events-none rounded-2xl" />
           </div>
         </div>
 
@@ -177,7 +175,11 @@ const Experience = () => {
           <h4 className='text-lg text-gray-300 text-center lg:text-left'>Sep 2025 - Present</h4>
           
           <p className='text-base lg:text-lg text-gray-400 leading-relaxed max-w-lg text-center lg:text-left'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+At Wavelaps, I worked on the development and enhancement of the main Wavelaps website and the XRCH Hackathon page.
+ I used React.js to build reusable and scalable components and implemented smooth animations to create an engaging 
+ and interactive user experience. I integrated NodeMailer for email functionality, enabling automated notifications
+  and form submissions. Additionally, I worked with Cloudflare to ensure optimized performance, security, and
+   reliable deployment of the website
           </p>
 
           {/* Technologies Section */}
