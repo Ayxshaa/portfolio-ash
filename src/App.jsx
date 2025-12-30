@@ -64,14 +64,10 @@ export default function App() {
                 {/* ❌ No Locomotive on MainContent (fixes 200% zoom) */}
                 <Route path="/" element={<MainContent />} />
 
-                {/* ✔ Locomotive only on Gallery page */}
+                {/* Gallery without Locomotive */}
                 <Route
                   path="/gallery"
-                  element={
-                    <SmoothScroll>
-                      <Gallery />
-                    </SmoothScroll>
-                  }
+                  element={<Gallery />}
                 />
 
               </Route>

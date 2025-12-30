@@ -18,8 +18,12 @@ export default function SmoothScroll({ children }) {
       },
     });
 
+    // Expose to window so Gallery can access it
+    window.locomotiveScroll = scroll;
+
     return () => {
       scroll.destroy();
+      window.locomotiveScroll = null;
     };
   }, []);
 
