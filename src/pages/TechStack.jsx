@@ -25,8 +25,7 @@ const TechStack = () => {
   const AUTO_ROTATION = 0.08; // degrees per frame (slower, smoother rotation)
   const DAMPING = 0.97; // velocity damping/inertia (higher = more smooth)
   const MOUSE_SENSITIVITY = 0.3; // mouse movement sensitivity
-  const INTERACTION_RADIUS = 350; // pixels - only respond to mouse near circle
-  const DRAG_ACTIVATION_RADIUS = 320; // pixels - must be very close to ring to start drag (tighter than hover)
+  const INTERACTION_RADIUS = 250; // pixels - only respond to mouse near circle (reduced)
 
   // Tech stack data
   const techStack = [
@@ -116,7 +115,7 @@ const TechStack = () => {
     }
   };
 
-  // Handle wheel scroll - prevent page scroll when over ring
+  // Handle wheel scroll - only rotate ring when over it, allow page scroll otherwise
   const handleWheel = (e) => {
     if (!containerRef.current) return;
 
@@ -128,17 +127,19 @@ const TechStack = () => {
     const dy = e.clientY - circleY;
     const distance = Math.sqrt(dx * dx + dy * dy);
     
-    // Check if scrolling over the ring - on mobile, expand interaction area
-    const isMobile = window.innerWidth < 768;
-    const scrollRadius = isMobile ? 400 : INTERACTION_RADIUS;
+    // Check if mouse is within the ring itself (between inner and outer radius)
+    const innerRadius = RADIUS - 60; // Inner boundary of ring
+    const outerRadius = RADIUS + 60; // Outer boundary of ring
     
-    if (distance < scrollRadius) {
+    // Only prevent default and rotate ring if scrolling directly over the ring
+    if (distance >= innerRadius && distance <= outerRadius) {
       e.preventDefault();
-      // Reduced scroll sensitivity for smoother experience
-      velocityRef.current += e.deltaY * 0.03;
+      // Much slower scroll sensitivity
+      velocityRef.current += e.deltaY * 0.015;
       setHasInteracted(true);
       setShowHint(false);
     }
+    // If outside ring area, allow normal page scroll
   };
 
   // Calculate logo position on arc
@@ -220,71 +221,34 @@ const TechStack = () => {
     };
   }, []);
 
-  // Detect if on mobile
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
-  // Calculate optimal container height for mobile
-  const containerHeight = isMobile ? 'auto min-h-screen' : 'h-screen';
-
   return (
     <div 
       ref={containerRef}
-      className={`w-full ${containerHeight} flex items-center justify-end bg-black overflow-hidden`}
-      style={{ 
-        touchAction: 'none', // Prevent browser scroll on touch
-        minHeight: isMobile ? `${(RADIUS * 2 * 0.6) + 400}px` : '100vh' // Ring diameter + extra space for content on mobile
-      }}
+      className="w-full h-screen flex items-center justify-end bg-black overflow-hidden"
     >
       <div className="relative w-full h-full">
-        {/* SVG Arc Path - Right half only, responsive */}
-        {!isMobile && (
-          <svg 
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{ opacity: 0.35 }}
-          >
-            <defs>
-              <linearGradient id="arcGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgb(168, 85, 247)" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="rgb(168, 85, 247)" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="rgb(168, 85, 247)" stopOpacity="0.6" />
-              </linearGradient>
-            </defs>
-            {/* Circle embedded in layout - more visible */}
-            <circle
-              cx={`calc(100% + ${CENTER_X}px)`}
-              cy={`${CENTER_Y}%`}
-              r={RADIUS}
-              fill="none"
-              stroke="url(#arcGradient)"
-              strokeWidth="2"
-            />
-          </svg>
-        )}
-        
-        {/* Mobile Ring Container - Centered and Contained */}
-        {isMobile && (
-          <svg 
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{ opacity: 0.35 }}
-          >
-            <defs>
-              <linearGradient id="mobileArcGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgb(168, 85, 247)" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="rgb(168, 85, 247)" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="rgb(168, 85, 247)" stopOpacity="0.6" />
-              </linearGradient>
-            </defs>
-            {/* Mobile centered circle */}
-            <circle
-              cx="50%"
-              cy="50%"
-              r={RADIUS * 0.6}
-              fill="none"
-              stroke="url(#mobileArcGradient)"
-              strokeWidth="2"
-            />
-          </svg>
-        )}
+        {/* SVG Arc Path - Same for all screen sizes */}
+        <svg 
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          style={{ opacity: 0.35 }}
+        >
+          <defs>
+            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="rgb(168, 85, 247)" stopOpacity="0.6" />
+              <stop offset="50%" stopColor="rgb(168, 85, 247)" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="rgb(168, 85, 247)" stopOpacity="0.6" />
+            </linearGradient>
+          </defs>
+          {/* Circle embedded in layout */}
+          <circle
+            cx={`calc(100% + ${CENTER_X}px)`}
+            cy={`${CENTER_Y}%`}
+            r={RADIUS}
+            fill="none"
+            stroke="url(#arcGradient)"
+            strokeWidth="2"
+          />
+        </svg>
 
         {/* Logos Container */}
         <div 
@@ -295,19 +259,9 @@ const TechStack = () => {
             const { x, y, angle } = getLogoPosition(index, rotation);
             const isActive = index === activeIndex;
             
-            // Convert to screen coordinates - responsive
-            let screenX, screenY;
-            if (isMobile) {
-              // Center ring on mobile
-              const mobileRadius = RADIUS * 0.6;
-              const mobileX = Math.cos(angle) * mobileRadius;
-              const mobileY = Math.sin(angle) * mobileRadius;
-              screenX = `calc(50% + ${mobileX}px)`;
-              screenY = `calc(50% + ${mobileY}px)`;
-            } else {
-              screenX = `calc(100% + ${CENTER_X + x}px)`;
-              screenY = `calc(${CENTER_Y}% + ${y}px)`;
-            }
+            // Convert to screen coordinates - same for all devices
+            const screenX = `calc(100% + ${CENTER_X + x}px)`;
+            const screenY = `calc(${CENTER_Y}% + ${y}px)`;
             
             // Counter-rotate to keep logos upright
             const counterRotation = -rotation - (index * 360 / techStack.length);
@@ -357,11 +311,9 @@ const TechStack = () => {
                     />
                   )}
 
-                  {/* Logo Container - Responsive Size */}
+                  {/* Logo Container */}
                   <motion.div
-                    className={`relative flex items-center justify-center rounded-full border-2 backdrop-blur-md cursor-pointer ${
-                      isMobile ? 'w-16 h-16' : 'w-20 h-20'
-                    }`}
+                    className="relative flex items-center justify-center rounded-full border-2 backdrop-blur-md cursor-pointer w-20 h-20"
                     style={{
                       borderColor: isActive ? tech.brandColor : 'rgba(168, 85, 247, 0.3)',
                       backgroundColor: isActive 
@@ -376,9 +328,7 @@ const TechStack = () => {
                     <img
                       src={tech.icon}
                       alt={tech.name}
-                      className={`object-contain transition-all duration-300 ${
-                        isMobile ? 'w-7 h-7' : 'w-10 h-10'
-                      }`}
+                      className="object-contain transition-all duration-300 w-10 h-10"
                       style={{
                         filter: isActive
                           ? `drop-shadow(0 0 10px ${tech.brandColor}) saturate(1.6) brightness(1.2)`
@@ -396,12 +346,12 @@ const TechStack = () => {
           })}
         </div>
 
-        {/* Center Reference Point - Responsive */}
+        {/* Center Reference Point */}
         <motion.div
           className="absolute w-2 h-2 rounded-full bg-purple-400"
           style={{
-            left: isMobile ? '50%' : `calc(100% + ${CENTER_X}px)`,
-            top: isMobile ? '50%' : `${CENTER_Y}%`,
+            left: `calc(100% + ${CENTER_X}px)`,
+            top: `${CENTER_Y}%`,
             transform: 'translate(-50%, -50%)',
           }}
           animate={{
@@ -413,14 +363,14 @@ const TechStack = () => {
           }}
         />
 
-        {/* Interactive Hint - Desktop Version */}
-        {showHint && !isMobile && (
+        {/* Interactive Hint */}
+        {showHint && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ delay: 0.8, duration: 0.6 }}
-            className="absolute hidden md:block"
+            className="absolute"
             style={{
               left: `calc(100% + ${CENTER_X}px)`,
               top: `calc(${CENTER_Y}% + ${RADIUS + 120}px)`,
@@ -491,75 +441,13 @@ const TechStack = () => {
           </motion.div>
         )}
 
-        {/* Interactive Hint - Show on Mobile with Full UI */}
-        {showHint && isMobile && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 md:hidden"
-          >
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="relative"
-            >
-              {/* Glassmorphic card - Same as desktop but smaller */}
-              <div className="relative backdrop-blur-xl bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-400/30 rounded-2xl px-5 py-3 shadow-2xl">
-                {/* Glow effect */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 blur-xl -z-10" />
-                
-                <div className="flex items-center gap-3">
-                  {/* Animated mouse icon - scaled down */}
-                  <motion.div
-                    animate={{ 
-                      scale: [1, 1.1, 1],
-                    }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    className="relative w-6 h-10 border-2 border-purple-400 rounded-full flex items-start justify-center pt-1"
-                  >
-                    <motion.div
-                      animate={{ y: [0, 6, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      className="w-1 h-2 bg-purple-400 rounded-full"
-                    />
-                  </motion.div>
-
-                  {/* Text */}
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-purple-300 font-semibold text-xs tracking-wide">
-                      SCROLL OR DRAG
-                    </span>
-                    <span className="text-purple-400/70 text-xs">
-                      Move the ring
-                    </span>
-                  </div>
-
-                  {/* Sparkle effect */}
-                  <motion.div
-                    animate={{ 
-                      rotate: [0, 180, 360],
-                      scale: [1, 1.2, 1]
-                    }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                    className="text-purple-400 text-lg"
-                  >
-                    ✨
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-
-        {/* Tech Name Display - Left Side Center (Desktop) or Center (Mobile) */}
+        {/* Tech Name Display - Right Side Center */}
         <motion.div
           className="absolute font-[JazzFont]"
           style={{
-            left: isMobile ? '50%' : '25%',
+            right: '8%',
             top: '50%',
-            transform: isMobile ? 'translate(-50%, -50%)' : 'translateY(-50%)',
+            transform: 'translateY(-50%)',
           }}
           key={activeIndex}
         >
@@ -574,38 +462,15 @@ const TechStack = () => {
             }}
             className="relative"
           >
-            {/* Glow background */}
-            {/* <motion.div
-              className="absolute inset-0 blur-3xl rounded-full"
-              style={{
-                background: techStack[activeIndex].brandColor,
-                opacity: 0.3,
-                scale: 1.5,
-              }}
-              animate={{
-                opacity: [0.2, 0.4, 0.2],
-                scale: [1.3, 1.6, 1.3],
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            /> */}
-
-            {/* Main text container - Same UI for mobile and desktop */}
-            <div className={`relative backdrop-blur-xl rounded-3xl shadow-2xl ${
-              isMobile ? 'px-5 py-5' : 'px-6 py-6'
-            }`}
+            {/* Main text container */}
+            <div className="relative backdrop-blur-xl rounded-3xl shadow-2xl px-6 py-6"
               style={{
                 borderColor: techStack[activeIndex].brandColor,
               }}
             >
-              {/* Tech name - Same size for all screens */}
+              {/* Tech name */}
               <motion.h2
-                className={`font-bold tracking-tight ${
-                  isMobile ? 'text-xl' : 'text-2xl'
-                }`}
+                className="font-bold tracking-tight text-2xl"
                 style={{
                   color: techStack[activeIndex].brandColor,
                   textShadow: `0 0 20px ${techStack[activeIndex].brandColor}80`,
@@ -626,7 +491,7 @@ const TechStack = () => {
                 {techStack[activeIndex].name}
               </motion.h2>
 
-              {/* Accent line - Same for all */}
+              {/* Accent line */}
               <motion.div
                 className="h-0.5 rounded-full mt-3"
                 style={{
@@ -638,17 +503,15 @@ const TechStack = () => {
               />
             </div>
 
-            {/* Particle effects - Show on mobile too, positioned responsively */}
+            {/* Particle effects */}
             {[...Array(3)].map((_, i) => (
               <motion.div
                 key={i}
-                className={`absolute w-2 h-2 rounded-full ${
-                  isMobile ? 'block' : ''
-                }`}
+                className="absolute w-2 h-2 rounded-full"
                 style={{
                   background: techStack[activeIndex].brandColor,
-                  top: isMobile ? `${-20 - i * 20}px` : `${20 + i * 30}%`,
-                  left: isMobile ? `${-15 - i * 10}px` : `${-10 - i * 15}px`,
+                  top: `${20 + i * 30}%`,
+                  left: `${-10 - i * 15}px`,
                 }}
                 animate={{
                   x: [-20, 20],
