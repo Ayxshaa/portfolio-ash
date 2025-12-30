@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import Button from "./Button"; // Your custom Button
 
@@ -21,6 +21,11 @@ const mediaItems = [
 ];
 
 const Gallery = () => {
+  // Scroll to top when Gallery component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="bg-black min-h-screen flex flex-col items-center py-10">
       {/* Back Button and Title */}
