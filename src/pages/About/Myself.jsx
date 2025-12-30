@@ -77,15 +77,15 @@ const Myself = () => {
   ];
 
   return (
-    <div className="w-full flex justify-center items-center gap-10 px-6 py-10">
+    <div className="w-full flex flex-col md:flex-row justify-center items-center gap-6 md:gap-10 px-4 sm:px-6 py-6 md:py-10">
       
       {/* LEFT SIDE — Image */}
-      <div className="w-[30%] flex justify-center">
+      <div className="w-full md:w-[30%] flex justify-center">
         <img 
           ref={imageRef}
           src={AboutMe}
           alt="About Me" 
-          className={`w-full h-auto max-h-[400px] object-contain rounded-xl transition-all duration-1000 ${
+          className={`w-full md:w-auto h-auto max-h-[300px] sm:max-h-[400px] object-contain rounded-xl transition-all duration-1000 ${
             isImageVisible 
               ? "opacity-100 translate-x-0" 
               : "opacity-0 -translate-x-10"
@@ -94,10 +94,10 @@ const Myself = () => {
       </div>
 
       {/* RIGHT SIDE — Text Content */}
-      <div className="w-[50%] flex flex-col justify-center items-start max-w-lg">
+      <div className="w-full md:w-[50%] flex flex-col justify-center items-start max-w-lg">
         <h2
           ref={titleRef}
-          className={`text-4xl text-[#704995] font-bold tracking-wider font-[JazzFont] transition-opacity duration-1000 ${
+          className={`text-2xl sm:text-3xl md:text-4xl text-[#704995] font-bold tracking-wider font-[JazzFont] transition-opacity duration-1000 ${
             isTitleVisible ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -106,7 +106,7 @@ const Myself = () => {
 
         <div
           ref={textRef}
-          className="mt-6 text-lg text-gray-300 leading-relaxed font-[JazzFont]"
+          className="mt-4 md:mt-6 text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed font-[JazzFont]"
         >
           {textContent.map((item, index) => {
             const delay = isTextVisible ? `${index * 0.1}s` : "0s";

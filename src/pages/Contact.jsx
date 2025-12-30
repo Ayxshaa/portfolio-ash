@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import Connect from "./Connect";
 
 const Contact = () => {
@@ -8,7 +9,6 @@ const Contact = () => {
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,15 +21,19 @@ const Contact = () => {
     // Simulate form submission
     setTimeout(() => {
       setIsSubmitting(false);
-      setSubmitSuccess(true);
+      
+      // Show success toast notification
+      toast.success("MESSAGE SENT SUCCESSFULLY!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       
       // Reset form after successful submission
       setFormData({ name: "", email: "", message: "" });
-      
-      // Reset success message after 3 seconds
-      setTimeout(() => {
-        setSubmitSuccess(false);
-      }, 3000);
     }, 1500);
   };
 
@@ -87,43 +91,34 @@ const Contact = () => {
               </div>
             </div>
             <div className="pt-4 flex justify-center">
-  <button
-    type="submit"
-    disabled={isSubmitting}
-    className="px-10 py-4 bg-gradient-to-r from-gray-400 to-purple-600 text-black font-[JazzFont] tracking-wider transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/30 inline-flex items-center rounded-sm"
-  >
-    {isSubmitting ? (
-      <span className="animate-pulse">SENDING...</span>
-    ) : (
-      <>
-        <span className="mr-3">SEND MESSAGE</span>
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor" 
-          className="w-5 h-5 transition-transform group-hover:translate-x-1"
-        >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M14 5l7 7m0 0l-7 7m7-7H3" 
-          />
-        </svg>
-      </>
-    )}
-  </button>
-</div>
-
-
-            {submitSuccess && (
-              <div className="mt-6 animate-fade-in">
-                <p className="text-green-400 font-[JazzFont] tracking-wider animate-pulse text-lg">
-                  MESSAGE SENT SUCCESSFULLY!
-                </p>
-              </div>
-            )}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-10 py-4 bg-gradient-to-r from-gray-400 to-purple-600 text-black font-[JazzFont] tracking-wider transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/30 inline-flex items-center rounded-sm"
+              >
+                {isSubmitting ? (
+                  <span className="animate-pulse">SENDING...</span>
+                ) : (
+                  <>
+                    <span className="mr-3">SEND MESSAGE</span>
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor" 
+                      className="w-5 h-5 transition-transform group-hover:translate-x-1"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M14 5l7 7m0 0l-7 7m7-7H3" 
+                      />
+                    </svg>
+                  </>
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </div>

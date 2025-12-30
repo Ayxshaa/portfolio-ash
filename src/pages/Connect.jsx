@@ -2,12 +2,12 @@ import React from "react";
 
 const Connect = () => {
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col items-center">
       <h3 className="font-[JazzFont] tracking-wider text-white text-xl mb-6 text-center">
         CONNECT WITH ME
       </h3>
       
-      <div className="flex justify-center space-x-8">
+      <div className="flex justify-center items-center space-x-8">
         {/* Instagram */}
         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" 
           className="transform transition-all duration-300 hover:scale-110 group">
@@ -32,7 +32,7 @@ const Connect = () => {
         </a>
         
         {/* GitHub */}
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" 
+        <a href="https://github.com/Ayxshaa" target="_blank" rel="noopener noreferrer" 
           className="transform transition-all duration-300 hover:scale-110 group">
           <div className="p-2 rounded-full bg-black border border-purple-500 group-hover:bg-purple-500/20 transition-all duration-300">
             <svg 
@@ -53,7 +53,7 @@ const Connect = () => {
         </a>
         
         {/* LinkedIn */}
-        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" 
+        <a href="https://www.linkedin.com/in/ayesha-qureshi-a67414344/" target="_blank" rel="noopener noreferrer" 
           className="transform transition-all duration-300 hover:scale-110 group">
           <div className="p-2 rounded-full bg-black border border-purple-500 group-hover:bg-purple-500/20 transition-all duration-300">
             <svg 

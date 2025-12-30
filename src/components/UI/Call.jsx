@@ -2,15 +2,15 @@ import React from 'react';
 
 const Call = () => {
   const features = [
-    "1:1 Personalized Meeting",
-    "Career Consultation",
-    "Portfolio Review",
-    "Project Discussion",
-    "Future Goals Planning"
+    "1:1 Frontend & Animation Session",
+  "Animated UI & Portfolio Review",
+  "React + Framer Motion Animations",
+  "Interactive & Scroll-Based Experiences",
+  "Creative Web & 3D UI Ideas"
   ];
 
   return (
-    <div className="w-full max-w-sm mx-auto">
+    <div className="w-full  max-w-sm mx-auto">
       <style>{`
         @keyframes rotate-border {
           to {
@@ -28,8 +28,9 @@ const Call = () => {
           display: flex;
           flex-direction: column;
           gap: 1rem;
-          padding: 1rem;
+          padding: 2rem;
           width: 100%;
+    
           background-color: hsla(240, 15%, 9%, 1);
           background-image: radial-gradient(
             at 88% 40%,
@@ -38,11 +39,11 @@ const Call = () => {
           ),
           radial-gradient(at 49% 30%, hsla(240, 15%, 9%, 1) 0px, transparent 85%),
           radial-gradient(at 14% 26%, hsla(240, 15%, 9%, 1) 0px, transparent 85%),
-          radial-gradient(at 0% 64%, hsla(263, 93%, 56%, 1) 0px, transparent 85%),
-          radial-gradient(at 41% 94%, hsla(284, 100%, 84%, 1) 0px, transparent 85%),
-          radial-gradient(at 100% 99%, hsla(306, 100%, 57%, 1) 0px, transparent 85%);
+          radial-gradient(at 0% 64%, hsla(263, 70%, 35%, 1) 0px, transparent 85%),
+          radial-gradient(at 41% 94%, hsla(284, 80%, 40%, 1) 0px, transparent 85%),
+          radial-gradient(at 100% 99%, hsla(306, 80%, 35%, 1) 0px, transparent 85%);
           border-radius: 1rem;
-          box-shadow: 0px -16px 24px 0px rgba(255, 255, 255, 0.25) inset;
+          box-shadow: 0px -16px 24px 0px rgba(255, 255, 255, 0.15) inset;
         }
 
         .card .card__border {
@@ -88,6 +89,8 @@ const Call = () => {
           font-size: 1rem;
           color: var(--white);
           font-weight: 600;
+          font-family: 'JazzFont';
+          letter-spacing: 0.05em;
         }
 
         .card .card_title__container .card_paragraph {
@@ -96,6 +99,8 @@ const Call = () => {
           font-size: 0.875rem;
           color: var(--paragraph);
           line-height: 1.4;
+          font-family: 'JazzFont';
+          letter-spacing: 0.05em;
         }
 
         .card .line {
@@ -149,12 +154,14 @@ const Call = () => {
             rgba(197, 107, 240, 1) 100%
           );
           font-size: 0.75rem;
-          color: var(--white);
+          color: var(--black);
           border: 0;
           border-radius: 9999px;
           box-shadow: inset 0 -2px 25px -4px var(--white);
           transition: all 0.3s ease;
           font-weight: 600;
+          font-family: 'JazzFont';
+          letter-spacing: 0.05em;
         }
 
         .card .button:hover {
@@ -162,12 +169,12 @@ const Call = () => {
         }
       `}</style>
 
-      <div className="card">
+      <div className="card ">
         <div className="card__border" />
         <div className="card_title__container">
           <span className="card_title">30 Min Meeting</span>
           <p className="card_paragraph">
-            Book a personalized meeting to discuss your projects, career goals, and explore collaboration opportunities.
+Book a 1:1 frontend consultation focused on modern UI animations, React, Framer Motion, and interactive web experiences.
           </p>
         </div>
         <hr className="line" />

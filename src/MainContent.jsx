@@ -7,9 +7,7 @@ const Myself = lazy(() => import("./pages/About/Myself"));
 const About = lazy(() => import("./pages/About/About"));
 const TechStack = lazy(() => import("./pages/TechStack"));
 const Projects = lazy(() => import("./pages/Projects"));
-const Call = lazy(() => import("./components/UI/Call"));
-const Connect = lazy(() => import("./pages/Connect"));
-const Contact = lazy(() => import("./pages/Contact"));
+const CombinedContact = lazy(() => import("./pages/CombinedContact"));
 const Experience = lazy(() => import("./pages/Experience"));
 
 export default function MainContent() {
@@ -20,20 +18,20 @@ export default function MainContent() {
       </Element>
 
       <Element name="myself" className="min-h-screen bg-black flex items-center justify-center">
-        <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading myself section...</div>}>
+        <Suspense fallback={<div className="text-white text-lg md:text-xl flex items-center justify-center">Loading myself section...</div>}>
           <Myself />
         </Suspense>
       </Element>
 
       <Element name="about" className="min-h-screen bg-black">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-screen">
-          <div className="flex items-center justify-center">
-            <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading about section...</div>}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 min-h-screen">
+          <div className="flex items-center justify-center px-4">
+            <Suspense fallback={<div className="text-white text-lg md:text-xl flex items-center justify-center">Loading about section...</div>}>
               <About />
             </Suspense>
           </div>
-          <div className="flex items-center justify-center">
-            <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading tech stack...</div>}>
+          <div className="flex items-center justify-center px-4">
+            <Suspense fallback={<div className="text-white text-lg md:text-xl flex items-center justify-center">Loading tech stack...</div>}>
               <TechStack />
             </Suspense>
           </div>
@@ -52,14 +50,9 @@ export default function MainContent() {
         </Suspense>
       </Element>
 
-      <Element name="call" className="min-h-screen flex items-center justify-center bg-black">
-        <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading call section...</div>}>
-          <Call />
-        </Suspense>
-      </Element>
       <Element name="contact" className="min-h-screen flex items-center justify-center bg-black">
         <Suspense fallback={<div className="text-white text-xl flex items-center justify-center">Loading contact info...</div>}>
-          <Contact />
+          <CombinedContact />
         </Suspense>
       </Element>
     </div>
